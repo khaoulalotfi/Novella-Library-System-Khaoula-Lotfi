@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookForm } from "./form";
 import { BookList } from "./list";
 import {
@@ -16,6 +16,7 @@ import {
   useBoundStore,
   useShallow,
 } from "@/components/providers/store-provider";
+import { getBooks } from "@/actions/books";
 import type { IBook } from "@/types/book-t";
 
 export function BookWrapper() {
@@ -24,6 +25,10 @@ export function BookWrapper() {
   );
   const [selected, setSelected] = useState<IBook | undefined>(undefined);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    getBooks().then(setBooks);
+  }, []);
 
   function handleEdit(book: IBook) {
     setSelected(book);

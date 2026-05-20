@@ -23,7 +23,8 @@ export function Nav(props: IProps) {
           alt="Novella logo"
           width={100}
           height={100}
-          className="object-contain"
+          className="h-12 w-auto"
+          priority
         />
         <span className="text-2xl font-bold text-primary leading-tight">
           Novella
