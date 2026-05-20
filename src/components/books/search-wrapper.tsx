@@ -1,26 +1,33 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { BookSearchForm } from "./search-form";
-import { BookList } from "./list";
+import { useState, useEffect } from "react"
+import { BookSearchForm } from "./search-form"
 import {
-  useBoundStore,
-  useShallow,
-} from "@/components/providers/store-provider";
-import type { IBook } from "@/types/book-t";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { useBoundStore, useShallow } from "@/components/providers/store-provider"
+import { getApi } from "@/utils/server-api"
+import type { IBook } from "@/types/book-t"
 
 export function BookSearchWrapper() {
-  const { books } = useBoundStore(useShallow((s) => ({ books: s.books })));
-  const [results, setResults] = useState<IBook[]>([]);
-  const [searched, setSearched] = useState(false);
+  const { books, setBooks } = useBoundStore(useShallow((s) => ({ books: s.books, setBooks: s.setBooks })))
+  const [results, setResults] = useState<IBook[]>([])
+  const [searched, setSearched] = useState(false)
+
+  useEffect(() => {
+    if (books.length === 0) {
+      getApi<IBook[]>({ url: "/api/books" }).then((r) => { if (Array.isArray(r)) setBooks(r) })
+    }
+  }, [])
 
   function handleSearch(found: IBook[]) {
-    setResults(found);
-    setSearched(true);
-  }
-
-  function handleEdit(book: IBook) {
-    console.log("edit", book);
+    setResults(found)
+    setSearched(true)
   }
 
   return (
@@ -38,9 +45,44 @@ export function BookSearchWrapper() {
               {results.length} result(s) found
             </p>
           </div>
-          <BookList books={results} onEdit={handleEdit} />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Inv. No</TableHead>
+                <TableHead>Code</TableHead>
+                <TableHead>Author(s)</TableHead>
+                <TableHead>Title</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Publisher</TableHead>
+                <TableHead>Year</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {results.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center text-muted-foreground">
+                    No books found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                results.map((book) => (
+                  <TableRow key={book.id}>
+                    <TableCell>{book.inventoryNumber}</TableCell>
+                    <TableCell>{book.codeValue ?? book.code ?? "—"}</TableCell>
+                    <TableCell>
+                      {(book.authorNames ?? book.authors).join(", ") || "—"}
+                    </TableCell>
+                    <TableCell>{book.title}</TableCell>
+                    <TableCell>{book.price}</TableCell>
+                    <TableCell>{book.publisherName ?? book.publisher}</TableCell>
+                    <TableCell>{book.year}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>
-  );
+  )
 }

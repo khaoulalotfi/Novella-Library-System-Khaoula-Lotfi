@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   useBoundStore,
   useShallow,
 } from "@/components/providers/store-provider";
+import { getApi } from "@/utils/server-api";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -13,9 +15,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { IBook } from "@/types/book-t";
 
 export function BookInventoryWrapper() {
-  const { books } = useBoundStore(useShallow((s) => ({ books: s.books })));
+  const { books, setBooks } = useBoundStore(
+    useShallow((s) => ({ books: s.books, setBooks: s.setBooks }))
+  );
+
+  useEffect(() => {
+    if (books.length === 0) {
+      getApi<IBook[]>({ url: "/api/books" }).then((r) => { if (Array.isArray(r)) setBooks(r) });
+    }
+  }, []);
 
   return (
     <div className="p-6">
@@ -41,7 +52,7 @@ export function BookInventoryWrapper() {
               <TableHead>Publisher</TableHead>
               <TableHead>Year</TableHead>
               <TableHead>Price</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Annotation</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -55,20 +66,18 @@ export function BookInventoryWrapper() {
                 </TableCell>
               </TableRow>
             ) : (
-              books.map((book, index) => (
-                <TableRow key={index}>
+              books.map((book) => (
+                <TableRow key={book.id}>
                   <TableCell>{book.inventoryNumber}</TableCell>
-                  <TableCell>{book.code}</TableCell>
-                  <TableCell>{book.authors}</TableCell>
+                  <TableCell>{book.codeValue ?? book.code ?? "—"}</TableCell>
+                  <TableCell>
+                    {(book.authorNames ?? book.authors).join(", ") || "—"}
+                  </TableCell>
                   <TableCell>{book.title}</TableCell>
-                  <TableCell>{book.publisher}</TableCell>
+                  <TableCell>{book.publisherName ?? book.publisher}</TableCell>
                   <TableCell>{book.year}</TableCell>
                   <TableCell>{book.price}</TableCell>
-                  <TableCell>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/20">
-                      Available
-                    </Badge>
-                  </TableCell>
+                  <TableCell className="max-w-xs truncate" title={book.annotation}>{book.annotation || "—"}</TableCell>
                 </TableRow>
               ))
             )}

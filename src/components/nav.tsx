@@ -36,12 +36,15 @@ export function Nav(props: IProps) {
             item.children ? (
               <NavigationMenuItem key={item.slug}>
                 <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
-                <NavigationMenuContent className="min-w-[180px]">
+                <NavigationMenuContent
+                  className="min-w-[180px] rounded-xl border border-white/10 backdrop-blur-md"
+                  style={{ background: "rgba(15, 10, 25, 0.75)" }}
+                >
                   {item.children.map((child) => (
                     <NavigationMenuLink key={child.slug} asChild>
                       <Link
                         href={`/${child.slug}`}
-                        className="whitespace-nowrap block px-4 py-2"
+                        className="whitespace-nowrap block px-4 py-2.5 text-sm font-medium text-white/80 hover:text-primary hover:bg-white/5 transition-colors rounded-lg"
                       >
                         {child.title}
                       </Link>

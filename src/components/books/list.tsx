@@ -12,9 +12,10 @@ import type { IBook } from "@/types/book-t";
 interface IProps {
   books: IBook[];
   onEdit: (book: IBook) => void;
+  onDelete: (id: string) => void;
 }
 
-export function BookList({ books, onEdit }: IProps) {
+export function BookList({ books, onEdit, onDelete }: IProps) {
   return (
     <Table>
       <TableHeader>
@@ -40,22 +41,31 @@ export function BookList({ books, onEdit }: IProps) {
             </TableCell>
           </TableRow>
         ) : (
-          books.map((book, index) => (
-            <TableRow key={index}>
+          books.map((book) => (
+            <TableRow key={book.id}>
               <TableCell>{book.inventoryNumber}</TableCell>
-              <TableCell>{book.code}</TableCell>
-              <TableCell>{book.authors}</TableCell>
+              <TableCell>{book.codeValue ?? book.code ?? "—"}</TableCell>
+              <TableCell>
+                {(book.authorNames ?? book.authors).join(", ") || "—"}
+              </TableCell>
               <TableCell>{book.title}</TableCell>
               <TableCell>{book.price}</TableCell>
-              <TableCell>{book.publisher}</TableCell>
+              <TableCell>{book.publisherName ?? book.publisher}</TableCell>
               <TableCell>{book.year}</TableCell>
-              <TableCell>
+              <TableCell className="flex gap-x-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onEdit(book)}
                 >
                   Edit
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => book.id && onDelete(book.id)}
+                >
+                  Delete
                 </Button>
               </TableCell>
             </TableRow>

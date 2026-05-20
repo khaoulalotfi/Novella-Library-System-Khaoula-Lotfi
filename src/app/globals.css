@@ -170,3 +170,12 @@ button {
 .nav-child-link:hover {
   @apply bg-primary text-primary-foreground no-underline;
 }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}

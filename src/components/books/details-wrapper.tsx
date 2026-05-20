@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useBoundStore,
   useShallow,
 } from "@/components/providers/store-provider";
+import { getApi } from "@/utils/server-api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +25,17 @@ import {
 import type { IBook } from "@/types/book-t";
 
 export function BookDetailsWrapper() {
-  const { books } = useBoundStore(useShallow((s) => ({ books: s.books })));
+  const { books, setBooks } = useBoundStore(
+    useShallow((s) => ({ books: s.books, setBooks: s.setBooks }))
+  );
   const [selected, setSelected] = useState<IBook | undefined>(undefined);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (books.length === 0) {
+      getApi<IBook[]>({ url: "/api/books" }).then((r) => { if (Array.isArray(r)) setBooks(r) });
+    }
+  }, []);
 
   function handleView(book: IBook) {
     setSelected(book);
@@ -68,11 +77,13 @@ export function BookDetailsWrapper() {
                 </TableCell>
               </TableRow>
             ) : (
-              books.map((book, index) => (
-                <TableRow key={index}>
+              books.map((book) => (
+                <TableRow key={book.id}>
                   <TableCell>{book.inventoryNumber}</TableCell>
                   <TableCell>{book.title}</TableCell>
-                  <TableCell>{book.authors}</TableCell>
+                  <TableCell>
+                    {book.authorNames?.join(", ") ?? book.authors.join(", ")}
+                  </TableCell>
                   <TableCell>{book.year}</TableCell>
                   <TableCell>
                     <Button
@@ -91,48 +102,55 @@ export function BookDetailsWrapper() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-primary">Book Details</DialogTitle>
           </DialogHeader>
           {selected && (
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Inventory Number</span>
-                <span className="font-medium">{selected.inventoryNumber}</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Code (UDC/ISBN)</span>
-                <span className="font-medium">{selected.code}</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Author(s)</span>
-                <span className="font-medium">{selected.authors}</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Title</span>
-                <span className="font-medium">{selected.title}</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Price</span>
-                <span className="font-medium">{selected.price}</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Publisher</span>
-                <span className="font-medium">{selected.publisher}</span>
-              </div>
-              <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Year</span>
-                <span className="font-medium">{selected.year}</span>
-              </div>
-              <div className="flex flex-col gap-y-1 border-b border-border pb-2">
-                <span className="text-muted-foreground">Annotation</span>
-                <span className="font-medium pl-4">{selected.annotation}</span>
-              </div>
+            <div className="space-y-4 text-sm">
+              <section className="space-y-2">
+                <h3 className="font-semibold text-muted-foreground uppercase text-xs tracking-wider">
+                  Book Information
+                </h3>
+                <Row label="Inventory Number" value={String(selected.inventoryNumber)} />
+                <Row label="Code (UDC/ISBN)" value={selected.codeValue ?? selected.code ?? "—"} />
+                <Row
+                  label="Author(s)"
+                  value={(selected.authorNames ?? selected.authors).join(", ") || "—"}
+                />
+                <Row label="Title" value={selected.title} />
+                <Row label="Price" value={String(selected.price)} />
+                <Row label="Publisher" value={selected.publisherName ?? selected.publisher ?? "—"} />
+                <Row label="Year" value={String(selected.year)} />
+                <div className="flex flex-col gap-y-1 border-b border-border pb-2">
+                  <span className="text-muted-foreground">Annotation</span>
+                  <span className="font-medium pl-2 text-sm leading-relaxed">
+                    {selected.annotation}
+                  </span>
+                </div>
+              </section>
+
+              <section className="space-y-2">
+                <h3 className="font-semibold text-muted-foreground uppercase text-xs tracking-wider">
+                  Subscription History
+                </h3>
+                <p className="text-muted-foreground italic text-sm py-2">
+                  No subscription records found for this book.
+                </p>
+              </section>
             </div>
           )}
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between border-b border-border pb-2">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium text-right max-w-[60%]">{value}</span>
     </div>
   );
 }

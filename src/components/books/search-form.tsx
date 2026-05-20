@@ -8,9 +8,16 @@ import { TextField } from "@/components/parts/text-field";
 import { SubmitButton } from "@/components/parts/submit-button";
 import type { IBook } from "@/types/book-t";
 
-const searchSchema = z.object({
-  query: z.string().min(1, "Please enter a search term"),
-});
+const searchSchema = z
+  .object({
+    title: z.string().optional(),
+    author: z.string().optional(),
+    year: z.string().optional(),
+  })
+  .refine((data) => data.title || data.author || data.year, {
+    message: "Please enter at least one search term",
+    path: ["title"],
+  });
 
 type SearchFormValues = z.infer<typeof searchSchema>;
 
@@ -23,19 +30,29 @@ export function BookSearchForm({ books, onSearch }: IProps) {
   const form = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
-      query: "",
+      title: "",
+      author: "",
+      year: "",
     },
   });
 
   function onSubmit(values: SearchFormValues) {
-    const q = values.query.toLowerCase();
-    const results = books.filter(
-      (b) =>
-        b.title.toLowerCase().includes(q) ||
-        b.authors.toLowerCase().includes(q) ||
-        b.code.toLowerCase().includes(q) ||
-        b.inventoryNumber.toLowerCase().includes(q),
-    );
+    const results = books.filter((b) => {
+      const matchTitle = values.title
+        ? b.title.toLowerCase().includes(values.title.toLowerCase())
+        : true;
+
+      const authorDisplay = (b.authorNames ?? b.authors).join(", ");
+      const matchAuthor = values.author
+        ? authorDisplay.toLowerCase().includes(values.author.toLowerCase())
+        : true;
+
+      const matchYear = values.year
+        ? b.year.toString() === values.year.trim()
+        : true;
+
+      return matchTitle && matchAuthor && matchYear;
+    });
     onSearch(results);
   }
 
@@ -43,18 +60,30 @@ export function BookSearchForm({ books, onSearch }: IProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex gap-x-4 items-end w-full"
+        className="space-y-4"
+        autoComplete="off"
       >
-        <div className="flex-1">
+        <div className="grid grid-cols-3 gap-4">
           <TextField
             control={form.control}
-            name="query"
-            label="Search by Title, Author or ISBN"
+            name="title"
+            label="Title"
+            placeholder="Search by title"
+          />
+          <TextField
+            control={form.control}
+            name="author"
+            label="Author"
+            placeholder="Search by author"
+          />
+          <TextField
+            control={form.control}
+            name="year"
+            label="Year"
+            placeholder="Search by year"
           />
         </div>
-        <div className="shrink-0">
-          <SubmitButton label="Search" />
-        </div>
+        <SubmitButton label="Search" />
       </form>
     </Form>
   );
