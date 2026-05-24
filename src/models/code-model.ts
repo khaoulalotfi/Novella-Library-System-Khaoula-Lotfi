@@ -1,8 +1,15 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, type Document, type Model } from "mongoose";
 
-const codeSchema = new Schema({
-  value: { type: String, required: true },
-});
+export interface ICodeDocument extends Document {
+  id: string;
+  value: string;
+}
 
-export const CodeModel =
-  mongoose.models["codes"] ?? mongoose.model("codes", codeSchema);
+const codeSchema = new Schema<ICodeDocument>(
+  { value: { type: String, required: true } },
+  { id: true },
+);
+
+export const CodeModel: Model<ICodeDocument> =
+  mongoose.models["codes"] ??
+  mongoose.model<ICodeDocument>("codes", codeSchema);

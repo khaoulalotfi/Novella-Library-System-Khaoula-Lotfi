@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { BookSearchForm } from "./search-form"
+import { useState } from "react";
+import { BookSearchForm } from "./search-form";
 import {
   Table,
   TableBody,
@@ -9,25 +9,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { useBoundStore, useShallow } from "@/components/providers/store-provider"
-import { getApi } from "@/utils/server-api"
-import type { IBook } from "@/types/book-t"
+} from "@/components/ui/table";
+import type { IBook } from "@/types/book-t";
 
-export function BookSearchWrapper() {
-  const { books, setBooks } = useBoundStore(useShallow((s) => ({ books: s.books, setBooks: s.setBooks })))
-  const [results, setResults] = useState<IBook[]>([])
-  const [searched, setSearched] = useState(false)
+interface IProps {
+  books: IBook[];
+}
 
-  useEffect(() => {
-    if (books.length === 0) {
-      getApi<IBook[]>({ url: "/api/books" }).then((r) => { if (Array.isArray(r)) setBooks(r) })
-    }
-  }, [])
+export function BookSearchWrapper({ books }: IProps) {
+  const [results, setResults] = useState<IBook[]>([]);
+  const [searched, setSearched] = useState(false);
 
   function handleSearch(found: IBook[]) {
-    setResults(found)
-    setSearched(true)
+    setResults(found);
+    setSearched(true);
   }
 
   return (
@@ -60,7 +55,10 @@ export function BookSearchWrapper() {
             <TableBody>
               {results.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center text-muted-foreground"
+                  >
                     No books found.
                   </TableCell>
                 </TableRow>
@@ -74,7 +72,9 @@ export function BookSearchWrapper() {
                     </TableCell>
                     <TableCell>{book.title}</TableCell>
                     <TableCell>{book.price}</TableCell>
-                    <TableCell>{book.publisherName ?? book.publisher}</TableCell>
+                    <TableCell>
+                      {book.publisherName ?? book.publisher}
+                    </TableCell>
                     <TableCell>{book.year}</TableCell>
                   </TableRow>
                 ))
@@ -84,5 +84,5 @@ export function BookSearchWrapper() {
         </div>
       )}
     </div>
-  )
+  );
 }

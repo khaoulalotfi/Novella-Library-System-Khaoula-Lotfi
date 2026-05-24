@@ -17,16 +17,16 @@ export function Nav(props: IProps) {
 
   return (
     <div className="flex items-center gap-x-6 p-4">
-      <Link href="/" className="flex items-center gap-x-3 hover:no-underline">
+      <Link href="/" className="flex items-center gap-x-0 hover:no-underline">
         <Image
           src="/logo.png"
           alt="Novella logo"
           width={100}
           height={100}
-          className="h-12 w-auto"
+          className="h-18 w-auto"
           priority
         />
-        <span className="text-2xl font-bold text-primary leading-tight">
+        <span className="text-1xl font-bold text-white leading-tight -ml-3">
           Novella
         </span>
       </Link>

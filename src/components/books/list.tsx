@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableBody,
@@ -7,14 +9,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { DeleteConfirmDialog } from "@/components/parts/delete-confirm-dialog";
 import type { IBook } from "@/types/book-t";
 
 interface IProps {
   books: IBook[];
   onEdit: (book: IBook) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string) => Promise<void>;
 }
-
+ 
 export function BookList({ books, onEdit, onDelete }: IProps) {
   return (
     <Table>
@@ -60,13 +63,11 @@ export function BookList({ books, onEdit, onDelete }: IProps) {
                 >
                   Edit
                 </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => book.id && onDelete(book.id)}
-                >
-                  Delete
-                </Button>
+                <DeleteConfirmDialog
+                  title="Delete Book"
+                  description={`Are you sure you want to delete "${book.title}"? This action cannot be undone.`}
+                  onConfirm={() => book.id ? onDelete(book.id) : Promise.resolve()}
+                />
               </TableCell>
             </TableRow>
           ))

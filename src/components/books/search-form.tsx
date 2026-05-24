@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import type { ResolverResult } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/parts/text-field";
@@ -19,7 +19,28 @@ const searchSchema = z
     path: ["title"],
   });
 
-type SearchFormValues = z.infer<typeof searchSchema>;
+interface SearchFormValues {
+  title?: string;
+  author?: string;
+  year?: string;
+}
+
+async function searchResolver(
+  values: SearchFormValues,
+): Promise<ResolverResult<SearchFormValues>> {
+  const result = await searchSchema.safeParseAsync(values);
+  if (result.success) {
+    return { values: result.data as SearchFormValues, errors: {} };
+  }
+  const errors: Record<string, { type: string; message: string }> = {};
+  for (const issue of result.error.issues) {
+    const key = String(issue.path[0] ?? "");
+    if (key && !errors[key]) {
+      errors[key] = { type: String(issue.code), message: issue.message };
+    }
+  }
+  return { values: {}, errors };
+}
 
 interface IProps {
   books: IBook[];
@@ -28,7 +49,7 @@ interface IProps {
 
 export function BookSearchForm({ books, onSearch }: IProps) {
   const form = useForm<SearchFormValues>({
-    resolver: zodResolver(searchSchema),
+    resolver: searchResolver,
     defaultValues: {
       title: "",
       author: "",
@@ -41,16 +62,13 @@ export function BookSearchForm({ books, onSearch }: IProps) {
       const matchTitle = values.title
         ? b.title.toLowerCase().includes(values.title.toLowerCase())
         : true;
-
       const authorDisplay = (b.authorNames ?? b.authors).join(", ");
       const matchAuthor = values.author
         ? authorDisplay.toLowerCase().includes(values.author.toLowerCase())
         : true;
-
       const matchYear = values.year
         ? b.year.toString() === values.year.trim()
         : true;
-
       return matchTitle && matchAuthor && matchYear;
     });
     onSearch(results);

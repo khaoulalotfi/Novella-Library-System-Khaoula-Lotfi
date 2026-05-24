@@ -1,11 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  useBoundStore,
-  useShallow,
-} from "@/components/providers/store-provider";
-import { getApi } from "@/utils/server-api";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,18 +19,13 @@ import {
 } from "@/components/ui/table";
 import type { IBook } from "@/types/book-t";
 
-export function BookDetailsWrapper() {
-  const { books, setBooks } = useBoundStore(
-    useShallow((s) => ({ books: s.books, setBooks: s.setBooks }))
-  );
+interface IProps {
+  books: IBook[];
+}
+
+export function BookDetailsWrapper({ books }: IProps) {
   const [selected, setSelected] = useState<IBook | undefined>(undefined);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (books.length === 0) {
-      getApi<IBook[]>({ url: "/api/books" }).then((r) => { if (Array.isArray(r)) setBooks(r) });
-    }
-  }, []);
 
   function handleView(book: IBook) {
     setSelected(book);
@@ -51,7 +41,7 @@ export function BookDetailsWrapper() {
         </p>
         <div className="flex items-center gap-x-2 mt-3">
           <Badge variant="outline" className="text-primary border-primary/40">
-            {books.length} {books.length === 1 ? "Book" : "Books"} Total
+            {`${books.length} ${books.length === 1 ? "Book" : "Books"} Total`}
           </Badge>
         </div>
       </div>
@@ -112,15 +102,26 @@ export function BookDetailsWrapper() {
                 <h3 className="font-semibold text-muted-foreground uppercase text-xs tracking-wider">
                   Book Information
                 </h3>
-                <Row label="Inventory Number" value={String(selected.inventoryNumber)} />
-                <Row label="Code (UDC/ISBN)" value={selected.codeValue ?? selected.code ?? "—"} />
+                <Row
+                  label="Inventory Number"
+                  value={String(selected.inventoryNumber)}
+                />
+                <Row
+                  label="Code (UDC/ISBN)"
+                  value={selected.codeValue ?? selected.code ?? "—"}
+                />
                 <Row
                   label="Author(s)"
-                  value={(selected.authorNames ?? selected.authors).join(", ") || "—"}
+                  value={
+                    (selected.authorNames ?? selected.authors).join(", ") || "—"
+                  }
                 />
                 <Row label="Title" value={selected.title} />
                 <Row label="Price" value={String(selected.price)} />
-                <Row label="Publisher" value={selected.publisherName ?? selected.publisher ?? "—"} />
+                <Row
+                  label="Publisher"
+                  value={selected.publisherName ?? selected.publisher ?? "—"}
+                />
                 <Row label="Year" value={String(selected.year)} />
                 <div className="flex flex-col gap-y-1 border-b border-border pb-2">
                   <span className="text-muted-foreground">Annotation</span>
@@ -129,7 +130,6 @@ export function BookDetailsWrapper() {
                   </span>
                 </div>
               </section>
-
               <section className="space-y-2">
                 <h3 className="font-semibold text-muted-foreground uppercase text-xs tracking-wider">
                   Subscription History

@@ -17,7 +17,7 @@ export const menu: INav[] = [
     slug: "subscribers",
     children: [
       { title: "Subscriber List", slug: "subscribers/list" },
-      { title: "Subscriber Details", slug: "subscribers/details" },
+      { title: "Subscriber Search", slug: "subscribers/search" },
       { title: "Borrowed Books", slug: "subscribers/borrowed" },
       { title: "Overdue Borrowers", slug: "subscribers/overdue" },
     ],

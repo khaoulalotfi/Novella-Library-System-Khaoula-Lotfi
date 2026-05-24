@@ -1,11 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import {
-  useBoundStore,
-  useShallow,
-} from "@/components/providers/store-provider";
-import { getApi } from "@/utils/server-api";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -17,17 +11,11 @@ import {
 } from "@/components/ui/table";
 import type { IBook } from "@/types/book-t";
 
-export function BookInventoryWrapper() {
-  const { books, setBooks } = useBoundStore(
-    useShallow((s) => ({ books: s.books, setBooks: s.setBooks }))
-  );
+interface IProps {
+  books: IBook[];
+}
 
-  useEffect(() => {
-    if (books.length === 0) {
-      getApi<IBook[]>({ url: "/api/books" }).then((r) => { if (Array.isArray(r)) setBooks(r) });
-    }
-  }, []);
-
+export function BookInventoryWrapper({ books }: IProps) {
   return (
     <div className="p-6">
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
@@ -37,7 +25,7 @@ export function BookInventoryWrapper() {
         </p>
         <div className="flex items-center gap-x-2 mt-3">
           <Badge variant="outline" className="text-primary border-primary/40">
-            {books.length} {books.length === 1 ? "Book" : "Books"} Total
+            {`${books.length} ${books.length === 1 ? "Book" : "Books"} Total`}
           </Badge>
         </div>
       </div>
@@ -77,7 +65,12 @@ export function BookInventoryWrapper() {
                   <TableCell>{book.publisherName ?? book.publisher}</TableCell>
                   <TableCell>{book.year}</TableCell>
                   <TableCell>{book.price}</TableCell>
-                  <TableCell className="max-w-xs truncate" title={book.annotation}>{book.annotation || "—"}</TableCell>
+                  <TableCell
+                    className="max-w-xs truncate"
+                    title={book.annotation}
+                  >
+                    {book.annotation || "—"}
+                  </TableCell>
                 </TableRow>
               ))
             )}

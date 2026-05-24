@@ -1,8 +1,15 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, type Document, type Model } from "mongoose";
 
-const authorSchema = new Schema({
-  name: { type: String, required: true },
-});
+export interface IAuthorDocument extends Document {
+  id: string;
+  name: string;
+}
 
-export const AuthorModel =
-  mongoose.models["authors"] ?? mongoose.model("authors", authorSchema);
+const authorSchema = new Schema<IAuthorDocument>(
+  { name: { type: String, required: true } },
+  { id: true },
+);
+
+export const AuthorModel: Model<IAuthorDocument> =
+  mongoose.models["authors"] ??
+  mongoose.model<IAuthorDocument>("authors", authorSchema);

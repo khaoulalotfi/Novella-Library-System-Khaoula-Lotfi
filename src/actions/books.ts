@@ -1,7 +1,9 @@
 "use server";
 
-import { getApi, postApi, putApi, deleteApi } from "@/utils/server-api";
+import { getApi, postApi } from "@/utils/server-api";
 import type { IBook, IAuthor, IPublisher, ICode } from "@/types/book-t";
+
+type BookActionResult = { error: string } | { book: IBook };
 
 export async function getBooks(): Promise<IBook[]> {
   const result = await getApi<IBook[]>({ url: "/api/books" });
@@ -27,17 +29,19 @@ export async function getCodes(): Promise<ICode[]> {
   return result;
 }
 
-export async function createBook(data: Omit<IBook, "id">): Promise<IBook> {
-  return await postApi("/api/books", data);
+export async function createBook(
+  data: Omit<IBook, "id">,
+): Promise<BookActionResult> {
+  return (await postApi("/api/books", data)) as BookActionResult;
 }
 
 export async function updateBook(
   id: string,
   data: Omit<IBook, "id">,
-): Promise<IBook> {
-  return await postApi("/api/books", { id, ...data }, "PUT");
+): Promise<BookActionResult> {
+  return (await postApi(`/api/books/${id}`, data, "PUT")) as BookActionResult;
 }
 
 export async function deleteBook(id: string): Promise<void> {
-  await deleteApi("/api/books", id);
+  await postApi(`/api/books/${id}`, {}, "DELETE");
 }
