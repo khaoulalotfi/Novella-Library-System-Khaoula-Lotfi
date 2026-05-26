@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLoans } from "@/hooks/use-loans";
 import {
   Table,
   TableBody,
@@ -18,108 +18,38 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { DeleteConfirmDialog } from "@/components/parts/delete-confirm-dialog";
-import { postApi } from "@/utils/server-api";
-import type { ILoan } from "@/types/subscriber-t";
-import type { ISubscriber } from "@/types/subscriber-t";
+import { BorrowForm } from "./borrow-form";
+import type { ILoan, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
-
-interface ILoanForm {
-  subscriberId: string;
-  bookId: string;
-  borrowDate: string;
-  returnDate: string;
-}
-
-interface ILoanFormErrors {
-  subscriberId?: string;
-  bookId?: string;
-  borrowDate?: string;
-  returnDate?: string;
-}
 
 interface IProps {
   loans: ILoan[];
   subscribers: ISubscriber[];
   books: IBook[];
+  isAdmin: boolean;
+  currentSubscriber?: ISubscriber;
 }
 
 export function BorrowedWrapper({
   loans: initialLoans,
   subscribers,
   books,
+  isAdmin,
+  currentSubscriber,
 }: IProps) {
-  const [loans, setLoans] = useState<ILoan[]>(initialLoans);
-  const [open, setOpen] = useState(false);
-  const [formErrors, setFormErrors] = useState<ILoanFormErrors>({});
-  const [form, setForm] = useState<ILoanForm>({
-    subscriberId: "",
-    bookId: "",
-    borrowDate: "",
-    returnDate: "",
-  });
-
-  function handleOpenChange(v: boolean) {
-    setOpen(v);
-    if (!v) {
-      setFormErrors({});
-      setForm({ subscriberId: "", bookId: "", borrowDate: "", returnDate: "" });
-    }
-  }
-
-  async function handleReturn(id: string): Promise<void> {
-    await postApi(`/api/loans/${id}`, {}, "DELETE");
-    setLoans(loans.filter((l) => l.id !== id));
-  }
-
-  async function handleBorrow(): Promise<void> {
-    const errors: ILoanFormErrors = {};
-    if (!form.subscriberId) errors.subscriberId = "Please select a subscriber.";
-    if (!form.bookId) errors.bookId = "Please select a book.";
-    if (!form.borrowDate) errors.borrowDate = "Please enter a borrow date.";
-    if (!form.returnDate) errors.returnDate = "Please enter a return date.";
-    if (
-      form.borrowDate &&
-      form.returnDate &&
-      form.returnDate <= form.borrowDate
-    ) {
-      errors.returnDate = "Return date must be after borrow date.";
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
-
-    setFormErrors({});
-    const result = await postApi("/api/loans", form);
-    if (result && "error" in result) {
-      setFormErrors({ subscriberId: result.error as string });
-      return;
-    }
-
-    const newLoan = result as ILoan;
-    setLoans([...loans, newLoan]);
-    setOpen(false);
-    setForm({ subscriberId: "", bookId: "", borrowDate: "", returnDate: "" });
-  }
-
-  function getSubscriber(subscriberId: string): ISubscriber | undefined {
-    return subscribers.find((s) => s.id === subscriberId);
-  }
-
-  function getBook(bookId: string): IBook | undefined {
-    return books.find((b) => b.id === bookId);
-  }
+  const {
+    loans,
+    open,
+    form,
+    formErrors,
+    setForm,
+    handleOpenChange,
+    handleReturn,
+    handleBorrow,
+    getSubscriber,
+    getBook,
+  } = useLoans(initialLoans, subscribers, books, currentSubscriber?.id);
 
   return (
     <div className="p-6">
@@ -149,87 +79,16 @@ export function BorrowedWrapper({
                   Borrow a Book
                 </DialogTitle>
               </DialogHeader>
-              <div className="space-y-2">
-                <div className="space-y-1">
-                  <Label>Subscriber</Label>
-                  <Select
-                    value={form.subscriberId}
-                    onValueChange={(v) => setForm({ ...form, subscriberId: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select subscriber" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {subscribers.map((s) => (
-                        <SelectItem key={s.id} value={s.id ?? ""}>
-                          {s.name} {s.surname}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formErrors.subscriberId && (
-                    <p className="text-destructive text-xs font-medium">
-                      {formErrors.subscriberId}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <Label>Book</Label>
-                  <Select
-                    value={form.bookId}
-                    onValueChange={(v) => setForm({ ...form, bookId: v })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select book" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {books.map((b) => (
-                        <SelectItem key={b.id} value={b.id ?? ""}>
-                          {b.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formErrors.bookId && (
-                    <p className="text-destructive text-xs font-medium">
-                      {formErrors.bookId}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <Label>Borrow Date</Label>
-                  <Input
-                    type="date"
-                    value={form.borrowDate}
-                    onChange={(e) =>
-                      setForm({ ...form, borrowDate: e.target.value })
-                    }
-                  />
-                  {formErrors.borrowDate && (
-                    <p className="text-destructive text-xs font-medium">
-                      {formErrors.borrowDate}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <Label>Return Date</Label>
-                  <Input
-                    type="date"
-                    value={form.returnDate}
-                    onChange={(e) =>
-                      setForm({ ...form, returnDate: e.target.value })
-                    }
-                  />
-                  {formErrors.returnDate && (
-                    <p className="text-destructive text-xs font-medium">
-                      {formErrors.returnDate}
-                    </p>
-                  )}
-                </div>
-                <Button className="w-full" onClick={handleBorrow}>
-                  Confirm Borrow
-                </Button>
-              </div>
+              <BorrowForm
+                form={form}
+                formErrors={formErrors}
+                setForm={setForm}
+                subscribers={subscribers}
+                books={books}
+                isAdmin={isAdmin}
+                currentSubscriber={currentSubscriber}
+                onBorrow={handleBorrow}
+              />
             </DialogContent>
           </Dialog>
         </div>
@@ -271,8 +130,8 @@ export function BorrowedWrapper({
                     <TableCell>{loan.returnDate}</TableCell>
                     <TableCell>
                       <DeleteConfirmDialog
-                        title="Return Book"
-                        description={`Are you sure you want to return "${book?.title ?? loan.bookId}"? This action cannot be undone.`}
+                        title={`Return "${book?.title ?? loan.bookId}"?`}
+                        description={`This will permanently remove the loan record for "${book?.title ?? loan.bookId}".`}
                         confirmLabel="Return"
                         triggerLabel="Return"
                         onConfirm={() =>

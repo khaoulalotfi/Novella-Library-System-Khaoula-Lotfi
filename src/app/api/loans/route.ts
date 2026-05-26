@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import {
   getAllLoans,
   getBorrowedBooks,
+  getReturnedBooks,
   getOverdueLoans,
   createLoan,
 } from "@/controllers/loan-controller";
@@ -13,6 +14,11 @@ export async function GET(request: NextRequest) {
 
     if (filter === "borrowed") {
       const loans = await getBorrowedBooks();
+      return Response.json(loans);
+    }
+
+    if (filter === "returned") {
+      const loans = await getReturnedBooks();
       return Response.json(loans);
     }
 

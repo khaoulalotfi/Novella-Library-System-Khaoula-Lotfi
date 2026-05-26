@@ -23,9 +23,15 @@ interface IProps {
   subscribers: ISubscriber[];
   onEdit: (subscriber: ISubscriber) => void;
   onDelete: (id: string) => Promise<void>;
+  isAdmin: boolean;
 }
 
-export function SubscriberList({ subscribers, onEdit, onDelete }: IProps) {
+export function SubscriberList({
+  subscribers,
+  onEdit,
+  onDelete,
+  isAdmin,
+}: IProps) {
   const [selected, setSelected] = useState<ISubscriber | undefined>(undefined);
   const [open, setOpen] = useState(false);
 
@@ -73,22 +79,26 @@ export function SubscriberList({ subscribers, onEdit, onDelete }: IProps) {
                   {subscriber.gender}
                 </TableCell>
                 <TableCell className="flex gap-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onEdit(subscriber)}
-                  >
-                    Edit
-                  </Button>
-                  <DeleteConfirmDialog
-                    title="Delete Subscriber"
-                    description={`Are you sure you want to delete "${subscriber.name} ${subscriber.surname}"? This action cannot be undone.`}
-                    onConfirm={() =>
-                      subscriber.id
-                        ? onDelete(subscriber.id)
-                        : Promise.resolve()
-                    }
-                  />
+                  {isAdmin && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEdit(subscriber)}
+                      >
+                        Edit
+                      </Button>
+                      <DeleteConfirmDialog
+                        title={`Delete Subscriber "${subscriber.name} ${subscriber.surname}"?`}
+                        description={`This will permanently remove "${subscriber.name} ${subscriber.surname}" from the system.`}
+                        onConfirm={() =>
+                          subscriber.id
+                            ? onDelete(subscriber.id)
+                            : Promise.resolve()
+                        }
+                      />
+                    </>
+                  )}
                   <Button
                     variant="secondary"
                     size="sm"

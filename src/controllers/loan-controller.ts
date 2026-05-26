@@ -25,6 +25,13 @@ export async function getBorrowedBooks(): Promise<ILoan[]> {
   return loans.map(mapLoan);
 }
 
+export async function getReturnedBooks(): Promise<ILoan[]> {
+  await connectMongoose();
+  const today = new Date().toISOString().split("T")[0] ?? "";
+  const loans = await LoanModel.find({ returnDate: { $lt: today } }).exec();
+  return loans.map(mapLoan);
+}
+
 export async function getOverdueLoans(): Promise<ILoan[]> {
   await connectMongoose();
   const today = new Date().toISOString().split("T")[0] ?? "";

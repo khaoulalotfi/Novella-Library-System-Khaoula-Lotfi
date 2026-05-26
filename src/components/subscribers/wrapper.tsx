@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useSubscribers } from "@/hooks/use-subscribers";
 import { SubscriberForm } from "./form";
 import { SubscriberList } from "./list";
 import {
@@ -12,69 +12,28 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { getApi, postApi } from "@/utils/server-api";
 import type { ISubscriber } from "@/types/subscriber-t";
 
 interface IProps {
   subscribers: ISubscriber[];
+  isAdmin: boolean;
 }
 
-export function SubscriberWrapper({ subscribers: initialSubscribers }: IProps) {
-  const [subscribers, setSubscribers] =
-    useState<ISubscriber[]>(initialSubscribers);
-  const [selected, setSelected] = useState<ISubscriber | undefined>(undefined);
-  const [open, setOpen] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-
-  function handleEdit(subscriber: ISubscriber) {
-    setSelected(subscriber);
-    setError(undefined);
-    setOpen(true);
-  }
-
-  function handleAdd() {
-    setSelected(undefined);
-    setError(undefined);
-    setOpen(true);
-  }
-
-  async function handleSaved(subscriber: ISubscriber) {
-    try {
-      if (selected?.id) {
-        const result = await postApi(
-          `/api/subscribers/${selected.id}`,
-          subscriber,
-          "PUT",
-        );
-        if (result && "error" in result) {
-          setError(result.error as string);
-          return;
-        }
-      } else {
-        const result = await postApi("/api/subscribers", subscriber);
-        if (result && "error" in result) {
-          setError(result.error as string);
-          return;
-        }
-      }
-      const refreshed = await getApi<ISubscriber[]>({
-        url: "/api/subscribers",
-      });
-      if (Array.isArray(refreshed)) setSubscribers(refreshed);
-      setOpen(false);
-      setSelected(undefined);
-      setError(undefined);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "An unexpected error occurred.",
-      );
-    }
-  }
-
-  async function handleDelete(id: string): Promise<void> {
-    await postApi(`/api/subscribers/${id}`, {}, "DELETE");
-    setSubscribers(subscribers.filter((s) => s.id !== id));
-  }
+export function SubscriberWrapper({
+  subscribers: initialSubscribers,
+  isAdmin,
+}: IProps) {
+  const {
+    subscribers,
+    selected,
+    open,
+    error,
+    handleEdit,
+    handleAdd,
+    handleSaved,
+    handleDelete,
+    handleOpenChange,
+  } = useSubscribers(initialSubscribers);
 
   return (
     <div className="p-6">
@@ -94,37 +53,30 @@ export function SubscriberWrapper({ subscribers: initialSubscribers }: IProps) {
               </Badge>
             </div>
           </div>
-          <Dialog
-            open={open}
-            onOpenChange={(v) => {
-              setOpen(v);
-              if (!v) {
-                setSelected(undefined);
-                setError(undefined);
-              }
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button onClick={handleAdd} size="lg">
-                + Add Subscriber
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-primary">
-                  {selected ? "Edit Subscriber" : "Add New Subscriber"}
-                </DialogTitle>
-              </DialogHeader>
-              <SubscriberForm
-                key={selected?.id ?? "new"}
-                selected={selected}
-                onSaved={handleSaved}
-              />
-              {error && (
-                <p className="text-destructive text-xs font-medium">{error}</p>
-              )}
-            </DialogContent>
-          </Dialog>
+          {isAdmin && (
+            <Dialog open={open} onOpenChange={handleOpenChange}>
+              <DialogTrigger asChild>
+                <Button onClick={handleAdd} size="lg">
+                  + Add Subscriber
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-primary">
+                    {selected ? "Edit Subscriber" : "Add New Subscriber"}
+                  </DialogTitle>
+                </DialogHeader>
+                <SubscriberForm
+                  key={selected?.id ?? "new"}
+                  selected={selected}
+                  onSaved={handleSaved}
+                />
+                {error && (
+                  <p className="text-destructive text-xs font-medium">{error}</p>
+                )}
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
       <div className="rounded-xl border border-border overflow-hidden">
@@ -132,6 +84,7 @@ export function SubscriberWrapper({ subscribers: initialSubscribers }: IProps) {
           subscribers={subscribers}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          isAdmin={isAdmin}
         />
       </div>
     </div>

@@ -5,6 +5,7 @@ export const menu: INav[] = [
   {
     title: "Books",
     slug: "books",
+    role: "user",
     children: [
       { title: "Book List", slug: "books/list" },
       { title: "Book Search", slug: "books/search" },
@@ -15,6 +16,7 @@ export const menu: INav[] = [
   {
     title: "Subscribers",
     slug: "subscribers",
+    role: "user",
     children: [
       { title: "Subscriber List", slug: "subscribers/list" },
       { title: "Subscriber Search", slug: "subscribers/search" },
@@ -25,6 +27,7 @@ export const menu: INav[] = [
   {
     title: "Loans",
     slug: "loans",
+    role: "user",
     children: [
       { title: "Loan History", slug: "loans/history" },
       { title: "Borrowed Books", slug: "loans/borrowed" },
@@ -35,6 +38,7 @@ export const menu: INav[] = [
   {
     title: "Authors & Publishers",
     slug: "authors",
+    role: "user",
     children: [
       { title: "Authors", slug: "authors/list" },
       { title: "Publishers", slug: "publishers/list" },
@@ -44,6 +48,7 @@ export const menu: INav[] = [
   {
     title: "Reports",
     slug: "reports",
+    role: "user",
     children: [
       { title: "Inventory Report", slug: "reports/inventory" },
       { title: "Loan Report", slug: "reports/loans" },
