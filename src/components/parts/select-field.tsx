@@ -12,12 +12,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import type { IOption } from "@/types/form-t";
 import type { Control, FieldValues, Path } from "react-hook-form";
-
-interface IOption {
-  id: string;
-  label: string;
-}
 
 interface IProps<T extends FieldValues> {
   control: Control<T>;
@@ -27,13 +23,8 @@ interface IProps<T extends FieldValues> {
   placeholder?: string;
 }
 
-export function SelectField<T extends FieldValues>({
-  control,
-  name,
-  label,
-  options,
-  placeholder,
-}: IProps<T>) {
+export function SelectField<T extends FieldValues>(props: IProps<T>) {
+  const { control, name, label, options, placeholder } = props;
   return (
     <FormField
       control={control}
@@ -50,7 +41,7 @@ export function SelectField<T extends FieldValues>({
             <SelectContent>
               {options.map((option) => (
                 <SelectItem key={option.id} value={option.id}>
-                  {option.label}
+                  {option.title}
                 </SelectItem>
               ))}
             </SelectContent>

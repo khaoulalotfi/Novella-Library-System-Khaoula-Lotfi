@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,12 @@ import {
 } from "@/components/ui/select";
 import { FormInput } from "@/components/parts/form-input";
 import { AuthorSelect } from "./author-select";
-import { bookResolver, type BookFormValues } from "./book-schema";
-import type { IBook, IAuthor, IPublisher, ICode } from "@/types/book-t";
+import { bookSchema } from "./book-schema"
+import type { IBookForm } from "@/types/book-t"
+import type { IBook } from "@/types/book-t";
+import type { IAuthor } from "@/types/author-t";
+import type { IPublisher } from "@/types/publisher-t";
+import type { ICode } from "@/types/code-t";
 
 interface IProps {
   selected: IBook | undefined;
@@ -24,20 +29,16 @@ interface IProps {
   onSaved: (book: IBook) => void;
 }
 
-export function BookForm({
-  selected,
-  authors,
-  publishers,
-  codes,
-  onSaved,
-}: IProps) {
+export function BookForm(props: IProps) {
+  const { selected, authors, publishers, codes, onSaved } = props;
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<BookFormValues>({
-    resolver: bookResolver,
+  } = useForm<IBookForm>({
+    resolver: zodResolver(bookSchema),
+    mode: "onTouched",
     defaultValues: {
       inventoryNumber:
         selected?.inventoryNumber != null
@@ -53,7 +54,7 @@ export function BookForm({
     },
   });
 
-  function onSubmit(values: BookFormValues) {
+  function onSubmit(values: IBookForm) {
     onSaved({
       id: selected?.id,
       inventoryNumber: Number(values.inventoryNumber),
@@ -67,12 +68,12 @@ export function BookForm({
     });
   }
 
-  const authorOptions = authors.map((a) => ({ id: a.id ?? "", label: a.name }));
+  const authorOptions = authors.map((a) => ({ id: a.id ?? "", title: a.name }));
   const publisherOptions = publishers.map((p) => ({
     id: p.id ?? "",
-    label: p.name,
+    title: p.name,
   }));
-  const codeOptions = codes.map((c) => ({ id: c.id ?? "", label: c.value }));
+  const codeOptions = codes.map((c) => ({ id: c.id ?? "", title: c.value }));
 
   return (
     <form
@@ -100,7 +101,7 @@ export function BookForm({
               <SelectContent>
                 {codeOptions.map((opt) => (
                   <SelectItem key={opt.id} value={opt.id}>
-                    {opt.label}
+                    {opt.title}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -142,7 +143,7 @@ export function BookForm({
               <SelectContent>
                 {publisherOptions.map((opt) => (
                   <SelectItem key={opt.id} value={opt.id}>
-                    {opt.label}
+                    {opt.title}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -1,20 +1,21 @@
-import { auth } from "@/utils/auth";
-import { headers } from "next/headers";
-import { signOutAction } from "@/actions/signout-action";
-import Link from "next/link";
+import { auth } from "@/utils/auth"
+import { headers } from "next/headers"
+import { signOutAction } from "@/actions/signout-action"
+import { Role } from "@/constants/role"
+import Link from "next/link"
 
 export async function AuthNav() {
   const session = await auth.api.getSession({
     headers: await headers(),
-  });
+  })
 
   return (
-    <ul className="grid grid-flow-col w-fit gap-x-4 items-center">
+    <ul className="flex items-center gap-x-3">
       {!session ? (
         <>
           <li>
             <Link
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               href="/signup"
             >
               Sign Up
@@ -22,7 +23,7 @@ export async function AuthNav() {
           </li>
           <li>
             <Link
-              className="text-sm text-primary hover:underline"
+              className="text-sm bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
               href="/signin"
             >
               Sign In
@@ -34,13 +35,16 @@ export async function AuthNav() {
         <>
           <li>
             <span className="text-sm text-muted-foreground">
-              {session.user.name} ({session.user.role ?? "user"})
+              {session.user.name ?? session.user.email}{" "}
+              <span className="text-xs text-primary/70">
+                ({session.user.role ?? Role.User})
+              </span>
             </span>
           </li>
           <li>
             <form action={signOutAction}>
               <button
-                className="text-sm text-primary hover:underline cursor-pointer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 type="submit"
               >
                 Sign Out
@@ -50,5 +54,5 @@ export async function AuthNav() {
         </>
       ) : null}
     </ul>
-  );
+  )
 }

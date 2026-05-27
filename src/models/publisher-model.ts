@@ -1,15 +1,32 @@
-import mongoose, { Schema, type Document, type Model } from "mongoose";
+import { model, models, Schema, type Model, type Types } from "mongoose"
+import type { WithStringId } from "./model-t"
 
-export interface IPublisherDocument extends Document {
-  id: string;
-  name: string;
+export interface IPublisherDoc {
+  id: string
+  name: string
 }
 
-const publisherSchema = new Schema<IPublisherDocument>(
-  { name: { type: String, required: true } },
-  { id: true },
-);
+type IReturnType = WithStringId<IPublisherDoc>
 
-export const PublisherModel: Model<IPublisherDocument> =
-  mongoose.models["publishers"] ??
-  mongoose.model<IPublisherDocument>("publishers", publisherSchema);
+const PublisherSchema = new Schema<IPublisherDoc>(
+  { name: { type: String, required: true } },
+  {
+    timestamps: false,
+    collection: "publishers",
+    strict: true,
+    toJSON: {
+      versionKey: false,
+      virtuals: true,
+      transform: (
+        _doc: unknown,
+        ret: IPublisherDoc & { _id: Types.ObjectId }
+      ): IReturnType => {
+        const { _id, ...rest } = ret
+        return { ...rest, id: _id.toString() }
+      },
+    },
+  }
+)
+
+export const PublisherModel: Model<IPublisherDoc> =
+  models["Publisher"] ?? model<IPublisherDoc>("Publisher", PublisherSchema)

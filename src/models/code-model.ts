@@ -1,15 +1,32 @@
-import mongoose, { Schema, type Document, type Model } from "mongoose";
+import { model, models, Schema, type Model, type Types } from "mongoose"
+import type { WithStringId } from "./model-t"
 
-export interface ICodeDocument extends Document {
-  id: string;
-  value: string;
+export interface ICodeDoc {
+  id: string
+  value: string
 }
 
-const codeSchema = new Schema<ICodeDocument>(
-  { value: { type: String, required: true } },
-  { id: true },
-);
+type IReturnType = WithStringId<ICodeDoc>
 
-export const CodeModel: Model<ICodeDocument> =
-  mongoose.models["codes"] ??
-  mongoose.model<ICodeDocument>("codes", codeSchema);
+const CodeSchema = new Schema<ICodeDoc>(
+  { value: { type: String, required: true } },
+  {
+    timestamps: false,
+    collection: "codes",
+    strict: true,
+    toJSON: {
+      versionKey: false,
+      virtuals: true,
+      transform: (
+        _doc: unknown,
+        ret: ICodeDoc & { _id: Types.ObjectId }
+      ): IReturnType => {
+        const { _id, ...rest } = ret
+        return { ...rest, id: _id.toString() }
+      },
+    },
+  }
+)
+
+export const CodeModel: Model<ICodeDoc> =
+  models["Code"] ?? model<ICodeDoc>("Code", CodeSchema)

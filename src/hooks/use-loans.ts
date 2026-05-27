@@ -2,22 +2,8 @@
 
 import { useState } from "react";
 import { postApi } from "@/utils/server-api";
-import type { ILoan, ISubscriber } from "@/types/subscriber-t";
+import type { ILoan, ILoanForm, ILoanFormErrors, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
-
-interface ILoanForm {
-  subscriberId: string;
-  bookId: string;
-  borrowDate: string;
-  returnDate: string;
-}
-
-interface ILoanFormErrors {
-  subscriberId?: string;
-  bookId?: string;
-  borrowDate?: string;
-  returnDate?: string;
-}
 
 export function useLoans(
   initialLoans: ILoan[],

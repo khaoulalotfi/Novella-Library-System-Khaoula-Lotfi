@@ -67,7 +67,7 @@ export function useBooks(initialBooks: IBook[]) {
         }
       }
 
-      const refreshed = await getApi<IBook[]>({ url: "/api/books" });
+      const refreshed = await getApi<IBook[]>("/api/books");
       if (Array.isArray(refreshed)) setBooks(refreshed);
       setOpen(false);
       setSelected(undefined);

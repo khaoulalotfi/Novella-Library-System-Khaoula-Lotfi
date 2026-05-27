@@ -15,7 +15,8 @@ interface IProps {
   books: IBook[];
 }
 
-export function BookInventoryWrapper({ books }: IProps) {
+export function BookInventoryWrapper(props: IProps) {
+  const { books } = props;
   return (
     <div className="p-6">
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">

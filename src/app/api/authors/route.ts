@@ -1,20 +1,24 @@
-import { connectMongoose } from "@/utils/mongoose-client";
-import { AuthorModel } from "@/models/author-model";
-import type { IAuthorDocument } from "@/models/author-model";
+import type { NextRequest } from "next/server"
+import { getAllAuthors, createAuthor } from "@/services/author-service"
+import { authorSchema } from "@/types/author-t"
+import type { IAuthorForm } from "@/types/author-t"
+import { z } from "zod"
 
 export async function GET() {
-  try {
-    await connectMongoose();
-    const authors = await AuthorModel.find().exec();
-    const mapped = authors.map((a: IAuthorDocument) => ({
-      id: a.id,
-      name: a.name,
-    }));
-    return Response.json(mapped);
-  } catch (error) {
+  const authors = await getAllAuthors()
+  return Response.json(authors)
+}
+
+export async function POST(request: NextRequest) {
+  const body: IAuthorForm = await request.json()
+  const parse = authorSchema.safeParse(body)
+  if (!parse.success) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
+      { errors: z.flattenError(parse.error).fieldErrors },
+      { status: 400 }
+    )
   }
+  const result = await createAuthor(parse.data)
+  if ("error" in result) return Response.json(result, { status: 400 })
+  return Response.json(result, { status: 201 })
 }

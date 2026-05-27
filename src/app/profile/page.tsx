@@ -13,7 +13,7 @@ export default async function ProfilePage() {
   if (!session) redirect("/signin");
 
   const subscribers =
-    (await getApi<ISubscriber[]>({ url: "/api/subscribers" })) ?? [];
+    (await getApi<ISubscriber[]>("/api/subscribers")) ?? [];
   const existing = subscribers.find((s) => s.email === session.user.email);
 
   if (existing) redirect("/");

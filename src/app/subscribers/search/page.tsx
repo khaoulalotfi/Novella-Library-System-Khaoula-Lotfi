@@ -4,6 +4,6 @@ import type { ISubscriber } from "@/types/subscriber-t";
 
 export default async function SubscriberSearchPage() {
   const subscribers =
-    (await getApi<ISubscriber[]>({ url: "/api/subscribers" })) ?? [];
+    (await getApi<ISubscriber[]>("/api/subscribers")) ?? [];
   return <SubscriberSearchWrapper subscribers={subscribers} />;
 }

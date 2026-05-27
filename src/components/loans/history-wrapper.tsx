@@ -21,7 +21,8 @@ interface IProps {
   books: IBook[];
 }
 
-export function HistoryWrapper({ loans, subscribers, books }: IProps) {
+export function HistoryWrapper(props: IProps) {
+  const { loans, subscribers, books } = props;
   const { search, setSearch, filtered, getSubscriber, getBook } = useLoanData(
     loans,
     subscribers,

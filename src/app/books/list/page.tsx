@@ -1,23 +1,31 @@
-import { BookWrapper } from "@/components/books/wrapper";
-import { getApi } from "@/utils/server-api";
-import { auth } from "@/utils/auth";
-import { headers } from "next/headers";
-import { Role } from "@/constants/role";
-import type { IBook, IAuthor, IPublisher, ICode } from "@/types/book-t";
+import { BookWrapper } from "@/components/books/wrapper"
+import { getApi } from "@/utils/server-api"
+import { auth } from "@/utils/auth"
+import { headers } from "next/headers"
+import { Role } from "@/constants/role"
+import type { IBook } from "@/types/book-t"
+import type { IAuthor } from "@/types/author-t"
+import type { IPublisher } from "@/types/publisher-t"
+import type { ICode } from "@/types/code-t"
 
 export default async function BookListPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
-  });
+  })
 
-  const isAdmin = session?.user.role === Role.Administrator;
+  const isAdmin = session?.user.role === Role.Administrator
 
-  const [books, authors, publishers, codes] = await Promise.all([
-    getApi<IBook[]>({ url: "/api/books" }).then((r) => r ?? []),
-    getApi<IAuthor[]>({ url: "/api/authors" }).then((r) => r ?? []),
-    getApi<IPublisher[]>({ url: "/api/publishers" }).then((r) => r ?? []),
-    getApi<ICode[]>({ url: "/api/codes" }).then((r) => r ?? []),
-  ]);
+  const [booksRes, authorsRes, publishersRes, codesRes] = await Promise.all([
+    getApi<IBook[]>("/api/books"),
+    getApi<IAuthor[]>("/api/authors"),
+    getApi<IPublisher[]>("/api/publishers"),
+    getApi<ICode[]>("/api/codes"),
+  ])
+
+  const books = booksRes ?? []
+  const authors = authorsRes ?? []
+  const publishers = publishersRes ?? []
+  const codes = codesRes ?? []
 
   return (
     <BookWrapper
@@ -27,5 +35,5 @@ export default async function BookListPage() {
       codes={codes}
       isAdmin={isAdmin}
     />
-  );
+  )
 }

@@ -26,12 +26,8 @@ interface IProps {
   isAdmin: boolean;
 }
 
-export function SubscriberList({
-  subscribers,
-  onEdit,
-  onDelete,
-  isAdmin,
-}: IProps) {
+export function SubscriberList(props: IProps) {
+  const { subscribers, onEdit, onDelete, isAdmin } = props;
   const [selected, setSelected] = useState<ISubscriber | undefined>(undefined);
   const [open, setOpen] = useState(false);
 

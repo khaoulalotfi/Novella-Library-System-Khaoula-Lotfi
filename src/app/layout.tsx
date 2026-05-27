@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 const notoSans = Noto_Sans({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
-  title: "Khaoula Library System",
+  title: "Novella Library System",
   description: "Manage books, subscribers, and loans.",
 }
 
@@ -24,7 +24,7 @@ export default async function RootLayout({
       <body className="bg-background min-h-screen flex flex-col">
         <StoreProvider>
           <Header />
-          <main className="flex-1 w-full max-w-screen-xl mx-auto px-6 py-4">
+          <main className="flex-1 w-full max-w-screen-xl mx-auto px-6 py-6">
             {children}
           </main>
           <Footer />

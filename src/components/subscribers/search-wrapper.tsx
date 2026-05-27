@@ -23,7 +23,8 @@ interface IProps {
   subscribers: ISubscriber[];
 }
 
-export function SubscriberSearchWrapper({ subscribers }: IProps) {
+export function SubscriberSearchWrapper(props: IProps) {
+  const { subscribers } = props;
   const [results, setResults] = useState<ISubscriber[]>([]);
   const [searched, setSearched] = useState(false);
   const [selected, setSelected] = useState<ISubscriber | undefined>(undefined);

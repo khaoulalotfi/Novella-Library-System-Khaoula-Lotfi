@@ -19,7 +19,8 @@ interface IProps {
   isAdmin: boolean;
 }
 
-export function BookList({ books, onEdit, onDelete, isAdmin }: IProps) {
+export function BookList(props: IProps) {
+  const { books, onEdit, onDelete, isAdmin } = props;
   return (
     <Table>
       <TableHeader>

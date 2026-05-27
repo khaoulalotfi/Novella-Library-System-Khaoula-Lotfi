@@ -1,15 +1,32 @@
-import mongoose, { Schema, type Document, type Model } from "mongoose";
+import { model, models, Schema, type Model, type Types } from "mongoose"
+import type { WithStringId } from "./model-t"
 
-export interface IAuthorDocument extends Document {
-  id: string;
-  name: string;
+export interface IAuthorDoc {
+  id: string
+  name: string
 }
 
-const authorSchema = new Schema<IAuthorDocument>(
-  { name: { type: String, required: true } },
-  { id: true },
-);
+type IReturnType = WithStringId<IAuthorDoc>
 
-export const AuthorModel: Model<IAuthorDocument> =
-  mongoose.models["authors"] ??
-  mongoose.model<IAuthorDocument>("authors", authorSchema);
+const AuthorSchema = new Schema<IAuthorDoc>(
+  { name: { type: String, required: true } },
+  {
+    timestamps: false,
+    collection: "authors",
+    strict: true,
+    toJSON: {
+      versionKey: false,
+      virtuals: true,
+      transform: (
+        _doc: unknown,
+        ret: IAuthorDoc & { _id: Types.ObjectId }
+      ): IReturnType => {
+        const { _id, ...rest } = ret
+        return { ...rest, id: _id.toString() }
+      },
+    },
+  }
+)
+
+export const AuthorModel: Model<IAuthorDoc> =
+  models["Author"] ?? model<IAuthorDoc>("Author", AuthorSchema)

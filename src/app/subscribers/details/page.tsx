@@ -14,9 +14,7 @@ export default async function SubscriberDetailsPage({ searchParams }: IProps) {
       <div className="p-6 text-muted-foreground">No subscriber selected.</div>
     );
 
-  const subscriber = await getApi<ISubscriber>({
-    url: `/api/subscribers/${id}`,
-  });
+  const subscriber = await getApi<ISubscriber>(`/api/subscribers/${id}`);
 
   if (!subscriber)
     return (

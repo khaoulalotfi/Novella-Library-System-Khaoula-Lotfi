@@ -3,6 +3,7 @@ import { getApi } from "@/utils/server-api";
 import { auth } from "@/utils/auth";
 import { headers } from "next/headers";
 import { Role } from "@/constants/role";
+import { LoanFilter } from "@/constants/loan-filter";
 import type { ILoan, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
 
@@ -13,11 +14,15 @@ export default async function BorrowedPage() {
 
   const isAdmin = session?.user.role === Role.Administrator;
 
-  const [loans, subscribers, books] = await Promise.all([
-    getApi<ILoan[]>({ url: "/api/loans?filter=borrowed" }).then((r) => r ?? []),
-    getApi<ISubscriber[]>({ url: "/api/subscribers" }).then((r) => r ?? []),
-    getApi<IBook[]>({ url: "/api/books" }).then((r) => r ?? []),
+  const [loansRes, subscribersRes, booksRes] = await Promise.all([
+    getApi<ILoan[]>(`/api/loans?filter=${LoanFilter.Borrowed}`),
+    getApi<ISubscriber[]>("/api/subscribers"),
+    getApi<IBook[]>("/api/books"),
   ]);
+
+  const loans = loansRes ?? [];
+  const subscribers = subscribersRes ?? [];
+  const books = booksRes ?? [];
 
   const userEmail = session?.user.email ?? "";
   const currentSubscriber = subscribers.find((s) => s.email === userEmail);

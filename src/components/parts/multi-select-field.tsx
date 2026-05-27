@@ -13,12 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { IOption } from "@/types/form-t";
 import type { Control, FieldValues, Path } from "react-hook-form";
-
-interface IOption {
-  id: string;
-  label: string;
-}
 
 interface IProps<T extends FieldValues> {
   control: Control<T>;
@@ -27,12 +23,8 @@ interface IProps<T extends FieldValues> {
   options: IOption[];
 }
 
-export function MultiSelectField<T extends FieldValues>({
-  control,
-  name,
-  label,
-  options,
-}: IProps<T>) {
+export function MultiSelectField<T extends FieldValues>(props: IProps<T>) {
+  const { control, name, label, options } = props;
   return (
     <FormField
       control={control}
@@ -65,7 +57,7 @@ export function MultiSelectField<T extends FieldValues>({
                     .filter((o) => !selected.includes(o.id))
                     .map((option) => (
                       <SelectItem key={option.id} value={option.id}>
-                        {option.label}
+                        {option.title}
                       </SelectItem>
                     ))}
                 </SelectContent>
@@ -76,7 +68,7 @@ export function MultiSelectField<T extends FieldValues>({
                 const option = options.find((o) => o.id === value);
                 return (
                   <Badge key={value} variant="outline" className="gap-x-1">
-                    {option?.label ?? value}
+                    {option?.title ?? value}
                     <button
                       type="button"
                       onClick={() => handleRemove(value)}

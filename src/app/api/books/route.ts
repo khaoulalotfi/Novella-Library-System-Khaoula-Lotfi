@@ -1,28 +1,24 @@
-import { getAllBooks, createBook } from "@/controllers/book-controller";
-import type { NextRequest } from "next/server";
+import type { NextRequest } from "next/server"
+import { getAllBooks, createBook } from "@/services/book-service"
+import { bookServerSchema } from "@/types/book-t"
+import type { IBook } from "@/types/book-t"
+import { z } from "zod"
 
 export async function GET() {
-  try {
-    const books = await getAllBooks();
-    return Response.json(books);
-  } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
-  }
+  const books = await getAllBooks()
+  return Response.json(books)
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const result = await createBook(body);
-    if ("error" in result) return Response.json(result, { status: 400 });
-    return Response.json(result.book);
-  } catch (error) {
+  const body: IBook = await request.json()
+  const parse = bookServerSchema.safeParse(body)
+  if (!parse.success) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
+      { errors: z.flattenError(parse.error).fieldErrors },
+      { status: 400 }
+    )
   }
+  const result = await createBook(parse.data)
+  if ("error" in result) return Response.json(result, { status: 400 })
+  return Response.json(result.book, { status: 201 })
 }

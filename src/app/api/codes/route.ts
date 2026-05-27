@@ -1,20 +1,24 @@
-import { connectMongoose } from "@/utils/mongoose-client";
-import { CodeModel } from "@/models/code-model";
-import type { ICodeDocument } from "@/models/code-model";
+import type { NextRequest } from "next/server"
+import { getAllCodes, createCode } from "@/services/code-service"
+import { codeSchema } from "@/types/code-t"
+import type { ICodeForm } from "@/types/code-t"
+import { z } from "zod"
 
 export async function GET() {
-  try {
-    await connectMongoose();
-    const codes = await CodeModel.find().exec();
-    const mapped = codes.map((c: ICodeDocument) => ({
-      id: c.id,
-      value: c.value,
-    }));
-    return Response.json(mapped);
-  } catch (error) {
+  const codes = await getAllCodes()
+  return Response.json(codes)
+}
+
+export async function POST(request: NextRequest) {
+  const body: ICodeForm = await request.json()
+  const parse = codeSchema.safeParse(body)
+  if (!parse.success) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
+      { errors: z.flattenError(parse.error).fieldErrors },
+      { status: 400 }
+    )
   }
+  const result = await createCode(parse.data)
+  if ("error" in result) return Response.json(result, { status: 400 })
+  return Response.json(result, { status: 201 })
 }

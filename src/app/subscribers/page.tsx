@@ -13,7 +13,7 @@ export default async function SubscribersPage() {
   const isAdmin = session?.user.role === Role.Administrator;
 
   const subscribers =
-    (await getApi<ISubscriber[]>({ url: "/api/subscribers" })) ?? [];
+    (await getApi<ISubscriber[]>("/api/subscribers")) ?? [];
 
   return <SubscriberWrapper subscribers={subscribers} isAdmin={isAdmin} />;
 }

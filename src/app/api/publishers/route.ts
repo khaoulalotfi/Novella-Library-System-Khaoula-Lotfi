@@ -1,20 +1,24 @@
-import { connectMongoose } from "@/utils/mongoose-client";
-import { PublisherModel } from "@/models/publisher-model";
-import type { IPublisherDocument } from "@/models/publisher-model";
+import type { NextRequest } from "next/server"
+import { getAllPublishers, createPublisher } from "@/services/publisher-service"
+import { publisherSchema } from "@/types/publisher-t"
+import type { IPublisherForm } from "@/types/publisher-t"
+import { z } from "zod"
 
 export async function GET() {
-  try {
-    await connectMongoose();
-    const publishers = await PublisherModel.find().exec();
-    const mapped = publishers.map((p: IPublisherDocument) => ({
-      id: p.id,
-      name: p.name,
-    }));
-    return Response.json(mapped);
-  } catch (error) {
+  const publishers = await getAllPublishers()
+  return Response.json(publishers)
+}
+
+export async function POST(request: NextRequest) {
+  const body: IPublisherForm = await request.json()
+  const parse = publisherSchema.safeParse(body)
+  if (!parse.success) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
+      { errors: z.flattenError(parse.error).fieldErrors },
+      { status: 400 }
+    )
   }
+  const result = await createPublisher(parse.data)
+  if ("error" in result) return Response.json(result, { status: 400 })
+  return Response.json(result, { status: 201 })
 }

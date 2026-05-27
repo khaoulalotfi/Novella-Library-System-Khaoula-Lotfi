@@ -1,17 +1,20 @@
-import mongoose, { Schema, type Document, type Model } from "mongoose";
+import { model, models, Schema, type Model, type Types } from "mongoose"
+import type { WithStringId } from "./model-t"
 
-export interface ISubscriberDocument extends Document {
-  id: string;
-  name: string;
-  surname: string;
-  phone: string;
-  email: string;
-  dateOfBirth: string;
-  idNumber: string;
-  gender: "male" | "female";
+export interface ISubscriberDoc {
+  id: string
+  name: string
+  surname: string
+  phone: string
+  email: string
+  dateOfBirth: string
+  idNumber: string
+  gender: "male" | "female"
 }
 
-const subscriberSchema = new Schema<ISubscriberDocument>(
+type IReturnType = WithStringId<ISubscriberDoc>
+
+const SubscriberSchema = new Schema<ISubscriberDoc>(
   {
     name: { type: String, required: true },
     surname: { type: String, required: true },
@@ -21,9 +24,23 @@ const subscriberSchema = new Schema<ISubscriberDocument>(
     idNumber: { type: String, required: true, unique: true },
     gender: { type: String, enum: ["male", "female"], required: true },
   },
-  { id: true, timestamps: true },
-);
+  {
+    timestamps: false,
+    collection: "subscribers",
+    strict: true,
+    toJSON: {
+      versionKey: false,
+      virtuals: true,
+      transform: (
+        _doc: unknown,
+        ret: ISubscriberDoc & { _id: Types.ObjectId }
+      ): IReturnType => {
+        const { _id, ...rest } = ret
+        return { ...rest, id: _id.toString() }
+      },
+    },
+  }
+)
 
-export const SubscriberModel: Model<ISubscriberDocument> =
-  mongoose.models["subscribers"] ??
-  mongoose.model<ISubscriberDocument>("subscribers", subscriberSchema);
+export const SubscriberModel: Model<ISubscriberDoc> =
+  models["Subscriber"] ?? model<ISubscriberDoc>("Subscriber", SubscriberSchema)

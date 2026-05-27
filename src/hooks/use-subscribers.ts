@@ -42,9 +42,7 @@ export function useSubscribers(initialSubscribers: ISubscriber[]) {
           return;
         }
       }
-      const refreshed = await getApi<ISubscriber[]>({
-        url: "/api/subscribers",
-      });
+      const refreshed = await getApi<ISubscriber[]>("/api/subscribers");
       if (Array.isArray(refreshed)) setSubscribers(refreshed);
       setOpen(false);
       setSelected(undefined);

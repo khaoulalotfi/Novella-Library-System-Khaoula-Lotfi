@@ -13,22 +13,16 @@ interface IProps<T extends FieldValues> {
   name: Path<T>;
   label: string;
   placeholder?: string;
-  maxLength?: number; // ✅ NEW: for character counter
+  maxLength?: number;
 }
 
-export function TextareaField<T extends FieldValues>({
-  control,
-  name,
-  label,
-  placeholder,
-  maxLength,
-}: IProps<T>) {
+export function TextareaField<T extends FieldValues>(props: IProps<T>) {
+  const { control, name, label, placeholder, maxLength } = props;
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => {
-        // ✅ NEW: Get current character count
         const currentLength = (field.value as string)?.length ?? 0;
 
         return (

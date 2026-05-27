@@ -1,18 +1,10 @@
-import type { NextRequest } from "next/server";
-import { deleteLoan } from "@/controllers/loan-controller";
+import type { NextRequest } from "next/server"
+import { deleteLoan } from "@/services/loan-service"
 
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  try {
-    const { id } = await params;
-    await deleteLoan(id);
-    return Response.json({ success: true });
-  } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
-  }
+interface IParams { params: Promise<{ id: string }> }
+
+export async function DELETE(_request: NextRequest, ctx: IParams) {
+  const { id } = await ctx.params
+  await deleteLoan(id)
+  return Response.json({ success: true })
 }

@@ -1,51 +1,24 @@
-import type { NextRequest } from "next/server";
-import {
-  getAllLoans,
-  getBorrowedBooks,
-  getReturnedBooks,
-  getOverdueLoans,
-  createLoan,
-} from "@/controllers/loan-controller";
+import type { NextRequest } from "next/server"
+import { getLoansByFilter, createLoan } from "@/services/loan-service"
+import { loanServerSchema } from "@/types/subscriber-t"
+import type { ILoanForm } from "@/types/subscriber-t"
+import { z } from "zod"
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const filter = searchParams.get("filter");
-
-    if (filter === "borrowed") {
-      const loans = await getBorrowedBooks();
-      return Response.json(loans);
-    }
-
-    if (filter === "returned") {
-      const loans = await getReturnedBooks();
-      return Response.json(loans);
-    }
-
-    if (filter === "overdue") {
-      const loans = await getOverdueLoans();
-      return Response.json(loans);
-    }
-
-    const loans = await getAllLoans();
-    return Response.json(loans);
-  } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
-  }
+  const filter = request.nextUrl.searchParams.get("filter")
+  const loans = await getLoansByFilter(filter)
+  return Response.json(loans)
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const loan = await createLoan(body);
-    return Response.json(loan);
-  } catch (error) {
+  const body: ILoanForm = await request.json()
+  const parse = loanServerSchema.safeParse(body)
+  if (!parse.success) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
+      { errors: z.flattenError(parse.error).fieldErrors },
+      { status: 400 }
+    )
   }
+  const loan = await createLoan(parse.data)
+  return Response.json(loan, { status: 201 })
 }

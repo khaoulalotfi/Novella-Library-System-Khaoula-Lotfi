@@ -6,7 +6,8 @@ interface IProps {
   subscriber: ISubscriber;
 }
 
-export function SubscriberDetailsWrapper({ subscriber }: IProps) {
+export function SubscriberDetailsWrapper(props: IProps) {
+  const { subscriber } = props;
   return (
     <div className="p-6">
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">

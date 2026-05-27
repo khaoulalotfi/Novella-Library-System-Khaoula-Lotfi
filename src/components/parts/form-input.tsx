@@ -7,7 +7,8 @@ interface IProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-export function FormInput({ label, error, ...rest }: IProps) {
+export function FormInput(props: IProps) {
+  const { label, error, ...rest } = props;
   return (
     <div className="space-y-1">
       <Label>{label}</Label>

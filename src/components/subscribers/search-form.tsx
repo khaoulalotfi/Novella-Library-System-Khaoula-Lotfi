@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import type { ResolverResult } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/parts/text-field";
@@ -19,27 +19,10 @@ const searchSchema = z
     path: ["name"],
   });
 
-interface SearchFormValues {
+interface ISearchFormValues {
   name?: string;
   surname?: string;
   phone?: string;
-}
-
-async function searchResolver(
-  values: SearchFormValues,
-): Promise<ResolverResult<SearchFormValues>> {
-  const result = await searchSchema.safeParseAsync(values);
-  if (result.success) {
-    return { values: result.data as SearchFormValues, errors: {} };
-  }
-  const errors: Record<string, { type: string; message: string }> = {};
-  for (const issue of result.error.issues) {
-    const key = String(issue.path[0] ?? "");
-    if (key && !errors[key]) {
-      errors[key] = { type: String(issue.code), message: issue.message };
-    }
-  }
-  return { values: {}, errors };
 }
 
 interface IProps {
@@ -47,9 +30,11 @@ interface IProps {
   onSearch: (results: ISubscriber[]) => void;
 }
 
-export function SubscriberSearchForm({ subscribers, onSearch }: IProps) {
-  const form = useForm<SearchFormValues>({
-    resolver: searchResolver,
+export function SubscriberSearchForm(props: IProps) {
+  const { subscribers, onSearch } = props;
+  const form = useForm<ISearchFormValues>({
+    resolver: zodResolver(searchSchema),
+    mode: "onTouched",
     defaultValues: {
       name: "",
       surname: "",
@@ -57,7 +42,7 @@ export function SubscriberSearchForm({ subscribers, onSearch }: IProps) {
     },
   });
 
-  function onSubmit(values: SearchFormValues) {
+  function onSubmit(values: ISearchFormValues) {
     const results = subscribers.filter((s) => {
       const matchName = values.name
         ? s.name.toLowerCase().includes(values.name.toLowerCase())

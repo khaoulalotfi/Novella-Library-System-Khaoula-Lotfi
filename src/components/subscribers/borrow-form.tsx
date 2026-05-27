@@ -10,22 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { ISubscriber } from "@/types/subscriber-t";
+import type { ILoanForm, ILoanFormErrors, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
-
-interface ILoanForm {
-  subscriberId: string;
-  bookId: string;
-  borrowDate: string;
-  returnDate: string;
-}
-
-interface ILoanFormErrors {
-  subscriberId?: string;
-  bookId?: string;
-  borrowDate?: string;
-  returnDate?: string;
-}
 
 interface IProps {
   form: ILoanForm;
@@ -38,16 +24,8 @@ interface IProps {
   onBorrow: () => void;
 }
 
-export function BorrowForm({
-  form,
-  formErrors,
-  setForm,
-  subscribers,
-  books,
-  isAdmin,
-  currentSubscriber,
-  onBorrow,
-}: IProps) {
+export function BorrowForm(props: IProps) {
+  const { form, formErrors, setForm, subscribers, books, isAdmin, currentSubscriber, onBorrow } = props;
   return (
     <div className="space-y-2">
       <div className="space-y-1">

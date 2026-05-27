@@ -1,33 +1,24 @@
-import type { NextRequest } from "next/server";
-import {
-  getAllSubscribers,
-  createSubscriber,
-} from "@/controllers/subscriber-controller";
+import type { NextRequest } from "next/server"
+import { getAllSubscribers, createSubscriber } from "@/services/subscriber-service"
+import { subscriberServerSchema } from "@/types/subscriber-t"
+import type { ISubscriberForm } from "@/types/subscriber-t"
+import { z } from "zod"
 
 export async function GET() {
-  try {
-    const subscribers = await getAllSubscribers();
-    return Response.json(subscribers);
-  } catch (error) {
-    return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
-  }
+  const subscribers = await getAllSubscribers()
+  return Response.json(subscribers)
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const result = await createSubscriber(body);
-    if ("error" in result) {
-      return Response.json({ error: result.error }, { status: 400 });
-    }
-    return Response.json(result);
-  } catch (error) {
+  const body: ISubscriberForm = await request.json()
+  const parse = subscriberServerSchema.safeParse(body)
+  if (!parse.success) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
-    );
+      { errors: z.flattenError(parse.error).fieldErrors },
+      { status: 400 }
+    )
   }
+  const result = await createSubscriber(parse.data)
+  if ("error" in result) return Response.json(result, { status: 400 })
+  return Response.json(result, { status: 201 })
 }

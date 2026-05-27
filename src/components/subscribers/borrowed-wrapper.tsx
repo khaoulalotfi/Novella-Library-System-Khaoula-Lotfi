@@ -31,13 +31,8 @@ interface IProps {
   currentSubscriber?: ISubscriber;
 }
 
-export function BorrowedWrapper({
-  loans: initialLoans,
-  subscribers,
-  books,
-  isAdmin,
-  currentSubscriber,
-}: IProps) {
+export function BorrowedWrapper(props: IProps) {
+  const { loans: initialLoans, subscribers, books, isAdmin, currentSubscriber } = props;
   const {
     loans,
     open,

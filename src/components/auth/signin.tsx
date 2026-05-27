@@ -7,6 +7,8 @@ import type { IState } from "@/types/shared-t";
 import { useActionState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
 
 export function SignIn() {
   const [state, formAction] = useActionState<IState, FormData>(
@@ -15,39 +17,76 @@ export function SignIn() {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <form className="space-y-4 w-full sm:w-96" action={formAction}>
-        <h1 className="text-2xl font-bold text-primary">Sign In</h1>
-        <div className="space-y-1">
-          <Label>Email</Label>
-          <Input name="email" type="email" placeholder="Enter email" />
-          {state.errors?.email && (
-            <p className="text-xs text-destructive">
-              {state.errors.email.join(" | ")}
+    <div className="flex items-center justify-center min-h-[70vh]">
+      <Card className="w-full max-w-sm border-border/50 shadow-2xl bg-card/80 backdrop-blur">
+        <CardHeader className="space-y-1 pb-4">
+          <CardTitle className="text-2xl font-bold text-primary">
+            Sign In
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Enter your credentials to access your account
+          </p>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" action={formAction} noValidate>
+            <div className="space-y-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                required
+              />
+              {state.errors?.email && (
+                <p className="text-xs text-destructive font-medium">
+                  {state.errors.email.join(" | ")}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                autoComplete="current-password"
+                required
+                minLength={8}
+              />
+              {state.errors?.password && (
+                <p className="text-xs text-destructive font-medium">
+                  {state.errors.password.join(" | ")}
+                </p>
+              )}
+            </div>
+
+            {state.errors?.general && (
+              <p className="text-xs text-destructive font-medium rounded-md bg-destructive/10 px-3 py-2">
+                {state.errors.general.join(" | ")}
+              </p>
+            )}
+
+            {state.message && !state.errors && (
+              <p className="text-xs text-green-400 font-medium rounded-md bg-green-400/10 px-3 py-2">
+                {state.message}
+              </p>
+            )}
+
+            <SubmitButton label="Sign In" />
+
+            <p className="text-center text-sm text-muted-foreground">
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="text-primary hover:underline font-medium">
+                Sign Up
+              </Link>
             </p>
-          )}
-        </div>
-        <div className="space-y-1">
-          <Label>Password</Label>
-          <Input name="password" type="password" placeholder="Enter password" />
-          {state.errors?.password && (
-            <p className="text-xs text-destructive">
-              {state.errors.password.join(" | ")}
-            </p>
-          )}
-        </div>
-        <SubmitButton label="Sign In" />
-        {state?.errors?.general && (
-          <div className="p-1 bg-red-100 italic text-sm">
-            {state.errors.general.join(" | ")}
-          </div>
-        )}
-        <div
-          className={`text-sm italic p-1 ${state?.errors ? "bg-red-100" : state?.message ? "bg-green-100" : ""}`}
-        >
-          {state?.message}
-        </div>
-      </form>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

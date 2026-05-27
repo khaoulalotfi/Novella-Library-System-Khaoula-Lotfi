@@ -23,7 +23,8 @@ interface IProps {
   books: IBook[];
 }
 
-export function BookDetailsWrapper({ books }: IProps) {
+export function BookDetailsWrapper(props: IProps) {
+  const { books } = props;
   const [selected, setSelected] = useState<IBook | undefined>(undefined);
   const [open, setOpen] = useState(false);
 

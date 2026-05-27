@@ -17,14 +17,8 @@ interface IProps<T extends FieldValues>
   placeholder?: string;
 }
 
-export function TextField<T extends FieldValues>({
-  control,
-  name,
-  label,
-  placeholder,
-  type = "text",
-  ...rest
-}: IProps<T>) {
+export function TextField<T extends FieldValues>(props: IProps<T>) {
+  const { control, name, label, placeholder, type = "text", ...rest } = props;
   return (
     <FormField
       control={control}

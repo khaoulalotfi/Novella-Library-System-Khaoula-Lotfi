@@ -1,0 +1,95 @@
+"use client";
+
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import type { ILoan, ISubscriber } from "@/types/subscriber-t";
+import type { IBook } from "@/types/book-t";
+
+interface IProps {
+  filtered: ILoan[];
+  search: string;
+  setSearch: (v: string) => void;
+  getSubscriber: (id: string) => ISubscriber | undefined;
+  getBook: (id: string) => IBook | undefined;
+}
+
+export function ReturnedList(props: IProps) {
+  const { filtered, search, setSearch, getSubscriber, getBook } = props;
+
+  return (
+    <div>
+      <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
+        <h1 className="text-3xl font-bold text-primary">Returned Books</h1>
+        <p className="text-muted-foreground mt-1">
+          Books that have been returned
+        </p>
+        <div className="flex items-center gap-x-2 mt-3">
+          <Badge variant="outline" className="text-primary border-primary/40">
+            {`${filtered.length} ${filtered.length === 1 ? "Record" : "Records"} Found`}
+          </Badge>
+        </div>
+      </div>
+      <div className="mb-4">
+        <Input
+          placeholder="Search by name, surname, phone or book title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
+      <div className="rounded-xl border border-border overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Surname</TableHead>
+              <TableHead>Book Title</TableHead>
+              <TableHead>Borrow Date</TableHead>
+              <TableHead>Return Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
+                  {search.trim()
+                    ? "No results match your search."
+                    : "No returned books found."}
+                </TableCell>
+              </TableRow>
+            ) : (
+              filtered.map((loan) => {
+                const subscriber = getSubscriber(loan.subscriberId);
+                const book = getBook(loan.bookId);
+                return (
+                  <TableRow key={loan.id}>
+                    <TableCell>
+                      {subscriber?.name ?? loan.subscriberId}
+                    </TableCell>
+                    <TableCell>{subscriber?.surname ?? "—"}</TableCell>
+                    <TableCell>{book?.title ?? loan.bookId}</TableCell>
+                    <TableCell>{loan.borrowDate}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {loan.returnDate}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}

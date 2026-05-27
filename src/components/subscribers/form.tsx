@@ -1,8 +1,7 @@
 "use client";
 
 import { useForm, Controller } from "react-hook-form";
-import type { ResolverResult } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -13,58 +12,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { ISubscriber } from "@/types/subscriber-t";
-
-const subscriberSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  surname: z.string().min(1, "Surname is required"),
-  phone: z.string().min(1, "Phone is required"),
-  email: z.string().min(1, "Email is required").email("Invalid email"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  idNumber: z.string().min(1, "ID number is required"),
-  gender: z.enum(["male", "female"], { error: "Gender is required" }),
-});
-
-interface SubscriberFormValues {
-  name: string;
-  surname: string;
-  phone: string;
-  email: string;
-  dateOfBirth: string;
-  idNumber: string;
-  gender: "male" | "female";
-}
-
-async function subscriberResolver(
-  values: SubscriberFormValues,
-): Promise<ResolverResult<SubscriberFormValues>> {
-  const result = await subscriberSchema.safeParseAsync(values);
-  if (result.success) {
-    return { values: result.data as SubscriberFormValues, errors: {} };
-  }
-  const errors: Record<string, { type: string; message: string }> = {};
-  for (const issue of result.error.issues) {
-    const key = String(issue.path[0] ?? "");
-    if (key && !errors[key]) {
-      errors[key] = { type: String(issue.code), message: issue.message };
-    }
-  }
-  return { values: {}, errors };
-}
+import { subscriberServerSchema } from "@/types/subscriber-t";
+import type { ISubscriber, ISubscriberForm } from "@/types/subscriber-t";
 
 interface IProps {
   selected: ISubscriber | undefined;
   onSaved: (subscriber: ISubscriber) => void;
 }
 
-export function SubscriberForm({ selected, onSaved }: IProps) {
+export function SubscriberForm(props: IProps) {
+  const { selected, onSaved } = props;
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors },
-  } = useForm<SubscriberFormValues>({
-    resolver: subscriberResolver,
+    formState: { errors, isSubmitting },
+  } = useForm<ISubscriberForm>({
+    resolver: zodResolver(subscriberServerSchema),
+    mode: "onTouched",
     defaultValues: {
       name: selected?.name ?? "",
       surname: selected?.surname ?? "",
@@ -76,7 +41,7 @@ export function SubscriberForm({ selected, onSaved }: IProps) {
     },
   });
 
-  function onSubmit(values: SubscriberFormValues) {
+  function onSubmit(values: ISubscriberForm) {
     onSaved({ ...values, id: selected?.id });
   }
 
@@ -170,8 +135,8 @@ export function SubscriberForm({ selected, onSaved }: IProps) {
         )}
       </div>
 
-      <Button type="submit" className="w-full">
-        {selected ? "Update Subscriber" : "Save Subscriber"}
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? "Saving…" : selected ? "Update Subscriber" : "Save Subscriber"}
       </Button>
     </form>
   );

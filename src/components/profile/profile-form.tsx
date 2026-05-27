@@ -30,7 +30,7 @@ export function ProfileForm() {
 
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <form className="space-y-4 w-full sm:w-96" action={formAction}>
+      <form className="space-y-4 w-full sm:w-96" action={formAction} noValidate>
         <h1 className="text-2xl font-bold text-primary">
           Complete Your Profile
         </h1>
@@ -39,7 +39,7 @@ export function ProfileForm() {
         </p>
         <div className="space-y-1">
           <Label>Name</Label>
-          <Input name="name" placeholder="Enter your name" required />
+          <Input name="name" placeholder="Enter your name" />
           {state.errors?.name && (
             <p className="text-xs text-destructive">
               {state.errors.name.join(" | ")}
@@ -48,7 +48,7 @@ export function ProfileForm() {
         </div>
         <div className="space-y-1">
           <Label>Surname</Label>
-          <Input name="surname" placeholder="Enter your surname" required />
+          <Input name="surname" placeholder="Enter your surname" />
           {state.errors?.surname && (
             <p className="text-xs text-destructive">
               {state.errors.surname.join(" | ")}
@@ -57,7 +57,7 @@ export function ProfileForm() {
         </div>
         <div className="space-y-1">
           <Label>Phone</Label>
-          <Input name="phone" placeholder="Enter your phone number" required />
+          <Input name="phone" placeholder="Enter your phone number" />
           {state.errors?.phone && (
             <p className="text-xs text-destructive">
               {state.errors.phone.join(" | ")}
@@ -66,7 +66,7 @@ export function ProfileForm() {
         </div>
         <div className="space-y-1">
           <Label>Date of Birth</Label>
-          <Input name="dateOfBirth" type="date" required />
+          <Input name="dateOfBirth" type="date" />
           {state.errors?.dateOfBirth && (
             <p className="text-xs text-destructive">
               {state.errors.dateOfBirth.join(" | ")}
@@ -75,7 +75,7 @@ export function ProfileForm() {
         </div>
         <div className="space-y-1">
           <Label>ID Number</Label>
-          <Input name="idNumber" placeholder="Enter your ID number" required />
+          <Input name="idNumber" placeholder="Enter your ID number" />
           {state.errors?.idNumber && (
             <p className="text-xs text-destructive">
               {state.errors.idNumber.join(" | ")}

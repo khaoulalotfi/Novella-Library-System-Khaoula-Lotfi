@@ -1,17 +1,18 @@
-import { HistoryWrapper } from "@/components/loans/history-wrapper";
-import { getApi } from "@/utils/server-api";
-import type { ILoan } from "@/types/subscriber-t";
-import type { ISubscriber } from "@/types/subscriber-t";
-import type { IBook } from "@/types/book-t";
+import { HistoryWrapper } from "@/components/loans/history-wrapper"
+import { getApi } from "@/utils/server-api"
+import type { ILoan, ISubscriber } from "@/types/subscriber-t"
+import type { IBook } from "@/types/book-t"
 
 export default async function LoanHistoryPage() {
-  const [loans, subscribers, books] = await Promise.all([
-    getApi<ILoan[]>({ url: "/api/loans" }).then((r) => r ?? []),
-    getApi<ISubscriber[]>({ url: "/api/subscribers" }).then((r) => r ?? []),
-    getApi<IBook[]>({ url: "/api/books" }).then((r) => r ?? []),
-  ]);
+  const [loansRes, subscribersRes, booksRes] = await Promise.all([
+    getApi<ILoan[]>("/api/loans"),
+    getApi<ISubscriber[]>("/api/subscribers"),
+    getApi<IBook[]>("/api/books"),
+  ])
 
-  return (
-    <HistoryWrapper loans={loans} subscribers={subscribers} books={books} />
-  );
+  const loans = loansRes ?? []
+  const subscribers = subscribersRes ?? []
+  const books = booksRes ?? []
+
+  return <HistoryWrapper loans={loans} subscribers={subscribers} books={books} />
 }

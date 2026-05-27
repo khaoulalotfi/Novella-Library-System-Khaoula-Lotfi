@@ -19,10 +19,8 @@ interface IProps {
   isAdmin: boolean;
 }
 
-export function SubscriberWrapper({
-  subscribers: initialSubscribers,
-  isAdmin,
-}: IProps) {
+export function SubscriberWrapper(props: IProps) {
+  const { subscribers: initialSubscribers, isAdmin } = props;
   const {
     subscribers,
     selected,

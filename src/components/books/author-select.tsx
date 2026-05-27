@@ -11,20 +11,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import type { BookFormValues } from "./book-schema";
-
-interface IOption {
-  id: string;
-  label: string;
-}
+import type { IBookForm } from "@/types/book-t"
+import type { IOption } from "@/types/form-t"
 
 interface IProps {
-  control: Control<BookFormValues>;
-  authorOptions: IOption[];
-  error?: string;
+  control: Control<IBookForm>
+  authorOptions: IOption[]
+  error?: string
 }
 
-export function AuthorSelect({ control, authorOptions, error }: IProps) {
+export function AuthorSelect(props: IProps) {
+  const { control, authorOptions, error } = props;
   return (
     <div className="space-y-1">
       <Label>Author(s)</Label>
@@ -50,7 +47,7 @@ export function AuthorSelect({ control, authorOptions, error }: IProps) {
                     .filter((o) => !picked.includes(o.id))
                     .map((opt) => (
                       <SelectItem key={opt.id} value={opt.id}>
-                        {opt.label}
+                        {opt.title}
                       </SelectItem>
                     ))}
                 </SelectContent>
@@ -61,7 +58,7 @@ export function AuthorSelect({ control, authorOptions, error }: IProps) {
                     const opt = authorOptions.find((o) => o.id === val);
                     return (
                       <Badge key={val} variant="outline" className="gap-x-1">
-                        {opt?.label ?? val}
+                        {opt?.title ?? val}
                         <button
                           type="button"
                           onClick={() =>

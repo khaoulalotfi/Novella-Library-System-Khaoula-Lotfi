@@ -8,9 +8,12 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (
-    publicPaths.some((p) => pathname === p) ||
+    publicPaths.includes(pathname) ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api")
+    pathname.startsWith("/api") ||
+    pathname.match(
+      /\.(css|js|png|jpg|jpeg|svg|ico|woff|woff2|ttf|map|json|webp)$/,
+    )
   ) {
     return NextResponse.next();
   }

@@ -1,11 +1,12 @@
-import type { INav } from "@/types/nav-t";
+import type { INav } from "@/types/nav-t"
+import { Role } from "@/constants/role"
 
 export const menu: INav[] = [
   { title: "Home", slug: "" },
   {
     title: "Books",
     slug: "books",
-    role: "user",
+    role: Role.User,
     children: [
       { title: "Book List", slug: "books/list" },
       { title: "Book Search", slug: "books/search" },
@@ -16,7 +17,7 @@ export const menu: INav[] = [
   {
     title: "Subscribers",
     slug: "subscribers",
-    role: "user",
+    role: Role.User,
     children: [
       { title: "Subscriber List", slug: "subscribers/list" },
       { title: "Subscriber Search", slug: "subscribers/search" },
@@ -27,7 +28,7 @@ export const menu: INav[] = [
   {
     title: "Loans",
     slug: "loans",
-    role: "user",
+    role: Role.User,
     children: [
       { title: "Loan History", slug: "loans/history" },
       { title: "Borrowed Books", slug: "loans/borrowed" },
@@ -38,17 +39,18 @@ export const menu: INav[] = [
   {
     title: "Authors & Publishers",
     slug: "authors",
-    role: "user",
+    role: Role.Administrator,
     children: [
       { title: "Authors", slug: "authors/list" },
       { title: "Publishers", slug: "publishers/list" },
+      { title: "Codes", slug: "codes/list" },
       { title: "Books by Year", slug: "books-by-year" },
     ],
   },
   {
     title: "Reports",
     slug: "reports",
-    role: "user",
+    role: Role.User,
     children: [
       { title: "Inventory Report", slug: "reports/inventory" },
       { title: "Loan Report", slug: "reports/loans" },
@@ -56,4 +58,4 @@ export const menu: INav[] = [
       { title: "Subscriber Report", slug: "reports/subscribers" },
     ],
   },
-];
+]

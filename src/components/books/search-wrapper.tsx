@@ -16,7 +16,8 @@ interface IProps {
   books: IBook[];
 }
 
-export function BookSearchWrapper({ books }: IProps) {
+export function BookSearchWrapper(props: IProps) {
+  const { books } = props;
   const [results, setResults] = useState<IBook[]>([]);
   const [searched, setSearched] = useState(false);
 

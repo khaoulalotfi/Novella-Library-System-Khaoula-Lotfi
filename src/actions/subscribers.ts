@@ -1,10 +1,11 @@
 "use server";
 
 import { getApi, postApi } from "@/utils/server-api";
+import { LoanFilter } from "@/constants/loan-filter";
 import type { ISubscriber, ILoan } from "@/types/subscriber-t";
 
 export async function getSubscribers(): Promise<ISubscriber[]> {
-  const result = await getApi<ISubscriber[]>({ url: "/api/subscribers" });
+  const result = await getApi<ISubscriber[]>("/api/subscribers");
   if (!result || !Array.isArray(result)) return [];
   return result;
 }
@@ -27,19 +28,19 @@ export async function deleteSubscriber(id: string): Promise<void> {
 }
 
 export async function getLoans(): Promise<ILoan[]> {
-  const result = await getApi<ILoan[]>({ url: "/api/loans" });
+  const result = await getApi<ILoan[]>("/api/loans");
   if (!result || !Array.isArray(result)) return [];
   return result;
 }
 
 export async function getBorrowedBooks(): Promise<ILoan[]> {
-  const result = await getApi<ILoan[]>({ url: "/api/loans?filter=borrowed" });
+  const result = await getApi<ILoan[]>(`/api/loans?filter=${LoanFilter.Borrowed}`);
   if (!result || !Array.isArray(result)) return [];
   return result;
 }
 
 export async function getOverdueLoans(): Promise<ILoan[]> {
-  const result = await getApi<ILoan[]>({ url: "/api/loans?filter=overdue" });
+  const result = await getApi<ILoan[]>(`/api/loans?filter=${LoanFilter.Overdue}`);
   if (!result || !Array.isArray(result)) return [];
   return result;
 }

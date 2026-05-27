@@ -21,7 +21,8 @@ interface IProps {
   books: IBook[];
 }
 
-export function OverdueWrapper({ loans, subscribers, books }: IProps) {
+export function OverdueWrapper(props: IProps) {
+  const { loans, subscribers, books } = props;
   const [search, setSearch] = useState<string>("");
 
   function getSubscriber(subscriberId: string): ISubscriber | undefined {

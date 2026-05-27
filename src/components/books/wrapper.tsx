@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { IBook, IAuthor, IPublisher, ICode } from "@/types/book-t";
+import type { IBook } from "@/types/book-t";
+import type { IAuthor } from "@/types/author-t";
+import type { IPublisher } from "@/types/publisher-t";
+import type { ICode } from "@/types/code-t";
 
 interface IProps {
   books: IBook[];
@@ -22,13 +25,8 @@ interface IProps {
   isAdmin: boolean;
 }
 
-export function BookWrapper({
-  books: initialBooks,
-  authors,
-  publishers,
-  codes,
-  isAdmin,
-}: IProps) {
+export function BookWrapper(props: IProps) {
+  const { books: initialBooks, authors, publishers, codes, isAdmin } = props;
   const {
     books,
     selected,
