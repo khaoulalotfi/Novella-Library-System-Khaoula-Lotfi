@@ -1,22 +1,5 @@
-import { ProfileForm } from "@/components/profile/profile-form";
-import { auth } from "@/utils/auth";
-import { headers } from "next/headers";
-import { getApi } from "@/utils/server-api";
-import { redirect } from "next/navigation";
-import type { ISubscriber } from "@/types/subscriber-t";
+import { redirect } from "next/navigation"
 
-export default async function ProfilePage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session) redirect("/signin");
-
-  const subscribers =
-    (await getApi<ISubscriber[]>("/api/subscribers")) ?? [];
-  const existing = subscribers.find((s) => s.email === session.user.email);
-
-  if (existing) redirect("/");
-
-  return <ProfileForm />;
+export default function ProfilePage() {
+  redirect("/en/profile")
 }

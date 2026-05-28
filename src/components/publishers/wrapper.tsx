@@ -13,13 +13,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import type { IPublisher } from "@/types/publisher-t"
+import type { IDict } from "@/lib/dictionary"
 
 interface IProps {
   publishers: IPublisher[]
+  dict: IDict["publishers"]
 }
 
 export function PublishersWrapper(props: IProps) {
-  const { publishers: initialPublishers } = props
+  const { publishers: initialPublishers, dict } = props
   const {
     publishers,
     selected,
@@ -37,28 +39,29 @@ export function PublishersWrapper(props: IProps) {
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Publishers</h1>
-            <p className="text-muted-foreground mt-1">Manage publishers</p>
+            <h1 className="text-3xl font-bold text-primary">{dict.title}</h1>
+            <p className="text-muted-foreground mt-1">{dict.subtitle}</p>
             <div className="flex items-center gap-x-2 mt-3">
               <Badge variant="outline" className="text-primary border-primary/40">
-                {`${publishers.length} ${publishers.length === 1 ? "Publisher" : "Publishers"} Total`}
+                {`${publishers.length} ${publishers.length === 1 ? dict.publisherSingular : dict.publisherPlural} ${dict.total}`}
               </Badge>
             </div>
           </div>
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-              <Button onClick={handleAdd} size="lg">+ Add Publisher</Button>
+              <Button onClick={handleAdd} size="lg">{dict.addPublisher}</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-primary">
-                  {selected ? "Edit Publisher" : "Add New Publisher"}
+                  {selected ? dict.editPublisher : dict.addNewPublisher}
                 </DialogTitle>
               </DialogHeader>
               <PublisherForm
                 key={selected?.id ?? "new"}
                 selected={selected}
                 onSaved={handleSaved}
+                dict={dict}
               />
               {error && (
                 <p className="text-xs text-destructive">{error}</p>
@@ -72,6 +75,7 @@ export function PublishersWrapper(props: IProps) {
           publishers={publishers}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          dict={dict}
         />
       </div>
     </div>

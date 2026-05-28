@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/e2e/.auth.json
+/test-results/
+/playwright-report/
 
 # next.js
 /.next/
@@ -39,3 +42,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sentry Config File
+.env.sentry-build-plugin

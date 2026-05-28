@@ -18,16 +18,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { ISubscriber } from "@/types/subscriber-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   subscribers: ISubscriber[];
   onEdit: (subscriber: ISubscriber) => void;
   onDelete: (id: string) => Promise<void>;
   isAdmin: boolean;
+  dict: IDict["subscribers"];
 }
 
 export function SubscriberList(props: IProps) {
-  const { subscribers, onEdit, onDelete, isAdmin } = props;
+  const { subscribers, onEdit, onDelete, isAdmin, dict } = props;
   const [selected, setSelected] = useState<ISubscriber | undefined>(undefined);
   const [open, setOpen] = useState(false);
 
@@ -42,14 +44,14 @@ export function SubscriberList(props: IProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Surname</TableHead>
-            <TableHead>Phone</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Date of Birth</TableHead>
-            <TableHead>ID Number</TableHead>
-            <TableHead>Gender</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead>{dict.colName}</TableHead>
+            <TableHead>{dict.colSurname}</TableHead>
+            <TableHead>{dict.colPhone}</TableHead>
+            <TableHead>{dict.colEmail}</TableHead>
+            <TableHead>{dict.colDateOfBirth}</TableHead>
+            <TableHead>{dict.colIdNumber}</TableHead>
+            <TableHead>{dict.colGender}</TableHead>
+            <TableHead>{dict.colActions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,7 +61,7 @@ export function SubscriberList(props: IProps) {
                 colSpan={8}
                 className="text-center text-muted-foreground"
               >
-                No subscribers yet.
+                {dict.noSubscribers}
               </TableCell>
             </TableRow>
           ) : (
@@ -71,8 +73,8 @@ export function SubscriberList(props: IProps) {
                 <TableCell>{subscriber.email}</TableCell>
                 <TableCell>{subscriber.dateOfBirth}</TableCell>
                 <TableCell>{subscriber.idNumber}</TableCell>
-                <TableCell className="capitalize">
-                  {subscriber.gender}
+                <TableCell>
+                  {subscriber.gender === "male" ? dict.male : dict.female}
                 </TableCell>
                 <TableCell className="flex gap-x-2">
                   {isAdmin && (
@@ -82,11 +84,14 @@ export function SubscriberList(props: IProps) {
                         size="sm"
                         onClick={() => onEdit(subscriber)}
                       >
-                        Edit
+                        {dict.edit}
                       </Button>
                       <DeleteConfirmDialog
-                        title={`Delete Subscriber "${subscriber.name} ${subscriber.surname}"?`}
-                        description={`This will permanently remove "${subscriber.name} ${subscriber.surname}" from the system.`}
+                        title={`${dict.delete} "${subscriber.name} ${subscriber.surname}"?`}
+                        description={dict.deleteDescription.replace("{name}", `${subscriber.name} ${subscriber.surname}`)}
+                        triggerLabel={dict.delete}
+                        confirmLabel={dict.delete}
+                        cancelLabel={dict.cancel}
                         onConfirm={() =>
                           subscriber.id
                             ? onDelete(subscriber.id)
@@ -102,7 +107,7 @@ export function SubscriberList(props: IProps) {
                       subscriber.id && handleDetails(subscriber.id)
                     }
                   >
-                    Details
+                    {dict.details}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -115,39 +120,39 @@ export function SubscriberList(props: IProps) {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-primary">
-              Subscriber Details
+              {dict.subscriberDetails}
             </DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="space-y-4 text-sm">
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Name</span>
+                <span className="text-muted-foreground">{dict.colName}</span>
                 <span className="font-medium">{selected.name}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Surname</span>
+                <span className="text-muted-foreground">{dict.colSurname}</span>
                 <span className="font-medium">{selected.surname}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Phone</span>
+                <span className="text-muted-foreground">{dict.colPhone}</span>
                 <span className="font-medium">{selected.phone}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Email</span>
+                <span className="text-muted-foreground">{dict.colEmail}</span>
                 <span className="font-medium">{selected.email}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Date of Birth</span>
+                <span className="text-muted-foreground">{dict.colDateOfBirth}</span>
                 <span className="font-medium">{selected.dateOfBirth}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">ID Number</span>
+                <span className="text-muted-foreground">{dict.colIdNumber}</span>
                 <span className="font-medium">{selected.idNumber}</span>
               </div>
               <div className="flex justify-between pb-2">
-                <span className="text-muted-foreground">Gender</span>
-                <span className="font-medium capitalize">
-                  {selected.gender}
+                <span className="text-muted-foreground">{dict.colGender}</span>
+                <span className="font-medium">
+                  {selected.gender === "male" ? dict.male : dict.female}
                 </span>
               </div>
             </div>

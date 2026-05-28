@@ -11,13 +11,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   books: IBook[];
+  dict: IDict["books"];
 }
 
 export function BookSearchWrapper(props: IProps) {
-  const { books } = props;
+  const { books, dict } = props;
   const [results, setResults] = useState<IBook[]>([]);
   const [searched, setSearched] = useState(false);
 
@@ -29,28 +31,28 @@ export function BookSearchWrapper(props: IProps) {
   return (
     <div className="p-6">
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
-        <h1 className="text-3xl font-bold text-primary">Book Search</h1>
+        <h1 className="text-3xl font-bold text-primary">{dict.searchTitle}</h1>
       </div>
       <div className="mb-8">
-        <BookSearchForm books={books} onSearch={handleSearch} />
+        <BookSearchForm books={books} onSearch={handleSearch} dict={dict} />
       </div>
       {searched && (
         <div className="rounded-xl border border-border overflow-hidden">
           <div className="p-4 border-b border-border">
             <p className="text-sm text-muted-foreground">
-              {results.length} result(s) found
+              {results.length} {dict.resultsFound}
             </p>
           </div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Inv. No</TableHead>
-                <TableHead>Code</TableHead>
-                <TableHead>Author(s)</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Publisher</TableHead>
-                <TableHead>Year</TableHead>
+                <TableHead>{dict.colInvNo}</TableHead>
+                <TableHead>{dict.colCode}</TableHead>
+                <TableHead>{dict.colAuthors}</TableHead>
+                <TableHead>{dict.colTitle}</TableHead>
+                <TableHead>{dict.colPrice}</TableHead>
+                <TableHead>{dict.colPublisher}</TableHead>
+                <TableHead>{dict.colYear}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -60,7 +62,7 @@ export function BookSearchWrapper(props: IProps) {
                     colSpan={7}
                     className="text-center text-muted-foreground"
                   >
-                    No books found.
+                    {dict.noBooksFound}
                   </TableCell>
                 </TableRow>
               ) : (

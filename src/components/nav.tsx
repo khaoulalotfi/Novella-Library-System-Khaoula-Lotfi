@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import type { IProps } from "@/types/nav-t";
+import type { INav } from "@/types/nav-t";
+import type { Locale } from "@/lib/dictionary";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,12 +13,17 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
+interface IProps {
+  menu: INav[];
+  lang: Locale;
+}
+
 export function Nav(props: IProps) {
-  const { menu } = props;
+  const { menu, lang } = props;
 
   return (
     <div className="flex items-center gap-x-6 p-4">
-      <Link href="/" className="flex items-center gap-x-0 hover:no-underline">
+      <Link href={`/${lang}`} className="flex items-center gap-x-0 hover:no-underline">
         <Image
           src="/logo.png"
           alt="Novella logo"
@@ -43,7 +49,7 @@ export function Nav(props: IProps) {
                   {item.children.map((child) => (
                     <NavigationMenuLink key={child.slug} asChild>
                       <Link
-                        href={`/${child.slug}`}
+                        href={`/${lang}/${child.slug}`}
                         className="whitespace-nowrap block px-4 py-2.5 text-sm font-medium text-white/80 hover:text-primary hover:bg-white/5 transition-colors rounded-lg"
                       >
                         {child.title}
@@ -55,7 +61,9 @@ export function Nav(props: IProps) {
             ) : (
               <NavigationMenuItem key={item.slug}>
                 <NavigationMenuLink asChild>
-                  <Link href={`/${item.slug}`}>{item.title}</Link>
+                  <Link href={item.slug ? `/${lang}/${item.slug}` : `/${lang}`}>
+                    {item.title}
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ),

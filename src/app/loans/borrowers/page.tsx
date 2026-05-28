@@ -1,5 +1,6 @@
 import { BorrowersWrapper } from "@/components/loans/borrowers-wrapper"
 import { getApi } from "@/utils/server-api"
+import { dict } from "@/dictionaries/en"
 import { LoanFilter } from "@/constants/loan-filter"
 import type { ILoan, ISubscriber } from "@/types/subscriber-t"
 import type { IBook } from "@/types/book-t"
@@ -16,6 +17,11 @@ export default async function LoanBorrowersPage() {
   const books = booksRes ?? []
 
   return (
-    <BorrowersWrapper loans={loans} subscribers={subscribers} books={books} />
+    <BorrowersWrapper
+      loans={loans}
+      subscribers={subscribers}
+      books={books}
+      dict={dict.loans}
+    />
   )
 }

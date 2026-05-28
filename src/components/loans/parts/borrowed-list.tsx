@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import type { ILoan, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   filtered: ILoan[];
@@ -19,25 +20,26 @@ interface IProps {
   setSearch: (v: string) => void;
   getSubscriber: (id: string) => ISubscriber | undefined;
   getBook: (id: string) => IBook | undefined;
+  dict: IDict["loans"];
 }
 
 export function BorrowedList(props: IProps) {
-  const { filtered, search, setSearch, getSubscriber, getBook } = props;
+  const { filtered, search, setSearch, getSubscriber, getBook, dict } = props;
 
   return (
     <div>
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
-        <h1 className="text-3xl font-bold text-primary">Borrowed Books</h1>
-        <p className="text-muted-foreground mt-1">Books currently on loan</p>
+        <h1 className="text-3xl font-bold text-primary">{dict.borrowedTitle}</h1>
+        <p className="text-muted-foreground mt-1">{dict.borrowedSubtitle}</p>
         <div className="flex items-center gap-x-2 mt-3">
           <Badge variant="outline" className="text-primary border-primary/40">
-            {`${filtered.length} ${filtered.length === 1 ? "Loan" : "Loans"} Active`}
+            {`${filtered.length} ${filtered.length === 1 ? dict.loanSingular : dict.loanPlural} ${dict.activeLabel}`}
           </Badge>
         </div>
       </div>
       <div className="mb-4">
         <Input
-          placeholder="Search by name, surname, phone or book title..."
+          placeholder={dict.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
@@ -47,11 +49,11 @@ export function BorrowedList(props: IProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Surname</TableHead>
-              <TableHead>Book Title</TableHead>
-              <TableHead>Borrow Date</TableHead>
-              <TableHead>Return Date</TableHead>
+              <TableHead>{dict.colName}</TableHead>
+              <TableHead>{dict.colSurname}</TableHead>
+              <TableHead>{dict.colBookTitle}</TableHead>
+              <TableHead>{dict.colBorrowDate}</TableHead>
+              <TableHead>{dict.colReturnDate}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -62,8 +64,8 @@ export function BorrowedList(props: IProps) {
                   className="text-center text-muted-foreground"
                 >
                   {search.trim()
-                    ? "No results match your search."
-                    : "No borrowed books found."}
+                    ? dict.noResults
+                    : dict.noBorrowed}
                 </TableCell>
               </TableRow>
             ) : (

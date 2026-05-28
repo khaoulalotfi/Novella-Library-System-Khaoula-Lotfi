@@ -12,23 +12,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { subscriberServerSchema } from "@/types/subscriber-t";
+import { createSubscriberSchema } from "@/types/subscriber-t";
 import type { ISubscriber, ISubscriberForm } from "@/types/subscriber-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   selected: ISubscriber | undefined;
   onSaved: (subscriber: ISubscriber) => void;
+  dict: IDict["subscribers"];
 }
 
 export function SubscriberForm(props: IProps) {
-  const { selected, onSaved } = props;
+  const { selected, onSaved, dict } = props;
+
+  const schema = createSubscriberSchema({
+    nameRequired: dict.errNameRequired,
+    surnameRequired: dict.errSurnameRequired,
+    phoneRequired: dict.errPhoneRequired,
+    emailInvalid: dict.errEmailInvalid,
+    dateOfBirthRequired: dict.errDateOfBirthRequired,
+    idNumberRequired: dict.errIdNumberRequired,
+    genderRequired: dict.errGenderRequired,
+  })
+
   const {
     register,
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ISubscriberForm>({
-    resolver: zodResolver(subscriberServerSchema),
+    resolver: zodResolver(schema),
     mode: "onTouched",
     defaultValues: {
       name: selected?.name ?? "",
@@ -52,8 +65,8 @@ export function SubscriberForm(props: IProps) {
       autoComplete="off"
     >
       <div className="space-y-1">
-        <Label>Name</Label>
-        <Input {...register("name")} placeholder="Enter name" />
+        <Label>{dict.formName}</Label>
+        <Input {...register("name")} placeholder={dict.formNamePlaceholder} />
         {errors.name && (
           <p className="text-destructive text-xs font-medium">
             {String(errors.name.message ?? "")}
@@ -62,8 +75,8 @@ export function SubscriberForm(props: IProps) {
       </div>
 
       <div className="space-y-1">
-        <Label>Surname</Label>
-        <Input {...register("surname")} placeholder="Enter surname" />
+        <Label>{dict.formSurname}</Label>
+        <Input {...register("surname")} placeholder={dict.formSurnamePlaceholder} />
         {errors.surname && (
           <p className="text-destructive text-xs font-medium">
             {String(errors.surname.message ?? "")}
@@ -72,8 +85,8 @@ export function SubscriberForm(props: IProps) {
       </div>
 
       <div className="space-y-1">
-        <Label>Phone</Label>
-        <Input {...register("phone")} placeholder="Enter phone number" />
+        <Label>{dict.formPhone}</Label>
+        <Input {...register("phone")} placeholder={dict.formPhonePlaceholder} />
         {errors.phone && (
           <p className="text-destructive text-xs font-medium">
             {String(errors.phone.message ?? "")}
@@ -82,8 +95,8 @@ export function SubscriberForm(props: IProps) {
       </div>
 
       <div className="space-y-1">
-        <Label>Email</Label>
-        <Input {...register("email")} placeholder="Enter email" />
+        <Label>{dict.formEmail}</Label>
+        <Input {...register("email")} placeholder={dict.formEmailPlaceholder} />
         {errors.email && (
           <p className="text-destructive text-xs font-medium">
             {String(errors.email.message ?? "")}
@@ -92,7 +105,7 @@ export function SubscriberForm(props: IProps) {
       </div>
 
       <div className="space-y-1">
-        <Label>Date of Birth</Label>
+        <Label>{dict.formDateOfBirth}</Label>
         <Input {...register("dateOfBirth")} type="date" />
         {errors.dateOfBirth && (
           <p className="text-destructive text-xs font-medium">
@@ -102,8 +115,8 @@ export function SubscriberForm(props: IProps) {
       </div>
 
       <div className="space-y-1">
-        <Label>ID Number</Label>
-        <Input {...register("idNumber")} placeholder="Enter ID number" />
+        <Label>{dict.formIdNumber}</Label>
+        <Input {...register("idNumber")} placeholder={dict.formIdNumberPlaceholder} />
         {errors.idNumber && (
           <p className="text-destructive text-xs font-medium">
             {String(errors.idNumber.message ?? "")}
@@ -112,18 +125,18 @@ export function SubscriberForm(props: IProps) {
       </div>
 
       <div className="space-y-1">
-        <Label>Gender</Label>
+        <Label>{dict.formGender}</Label>
         <Controller
           control={control}
           name="gender"
           render={({ field }) => (
             <Select onValueChange={field.onChange} value={field.value}>
               <SelectTrigger>
-                <SelectValue placeholder="Select gender" />
+                <SelectValue placeholder={dict.formGenderPlaceholder} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="male">{dict.formMale}</SelectItem>
+                <SelectItem value="female">{dict.formFemale}</SelectItem>
               </SelectContent>
             </Select>
           )}
@@ -136,7 +149,7 @@ export function SubscriberForm(props: IProps) {
       </div>
 
       <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Saving…" : selected ? "Update Subscriber" : "Save Subscriber"}
+        {isSubmitting ? dict.saving : selected ? dict.updateSubscriber : dict.saveSubscriber}
       </Button>
     </form>
   );

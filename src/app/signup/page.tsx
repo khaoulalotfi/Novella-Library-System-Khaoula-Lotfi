@@ -1,5 +1,5 @@
-import { Register } from "@/components/auth/register";
+import { redirect } from "next/navigation"
 
 export default function SignUpPage() {
-  return <Register />;
+  redirect("/en/signup")
 }

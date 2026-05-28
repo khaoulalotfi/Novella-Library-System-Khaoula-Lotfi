@@ -1,5 +1,6 @@
 import { LoansBorrowedWrapper } from "@/components/loans/borrowed-wrapper"
 import { getApi } from "@/utils/server-api"
+import { dict } from "@/dictionaries/en"
 import { LoanFilter } from "@/constants/loan-filter"
 import type { ILoan, ISubscriber } from "@/types/subscriber-t"
 import type { IBook } from "@/types/book-t"
@@ -20,6 +21,7 @@ export default async function LoansBorrowedPage() {
       loans={loans}
       subscribers={subscribers}
       books={books}
+      dict={dict.loans}
     />
   )
 }

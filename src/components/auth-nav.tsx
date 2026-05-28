@@ -3,8 +3,17 @@ import { headers } from "next/headers"
 import { signOutAction } from "@/actions/signout-action"
 import { Role } from "@/constants/role"
 import Link from "next/link"
+import { LangSwitcher } from "@/components/parts/lang-switcher"
+import type { Locale, IDict } from "@/lib/dictionary"
 
-export async function AuthNav() {
+interface IProps {
+  lang: Locale
+  dict: IDict["auth"]
+}
+
+export async function AuthNav(props: IProps) {
+  const { lang, dict } = props
+
   const session = await auth.api.getSession({
     headers: await headers(),
   })
@@ -16,17 +25,17 @@ export async function AuthNav() {
           <li>
             <Link
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              href="/signup"
+              href={`/${lang}/signup`}
             >
-              Sign Up
+              {dict.signUp}
             </Link>
           </li>
           <li>
             <Link
               className="text-sm bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
-              href="/signin"
+              href={`/${lang}/signin`}
             >
-              Sign In
+              {dict.signIn}
             </Link>
           </li>
         </>
@@ -47,12 +56,15 @@ export async function AuthNav() {
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 type="submit"
               >
-                Sign Out
+                {dict.signOut}
               </button>
             </form>
           </li>
         </>
       ) : null}
+      <li>
+        <LangSwitcher currentLang={lang} />
+      </li>
     </ul>
   )
 }

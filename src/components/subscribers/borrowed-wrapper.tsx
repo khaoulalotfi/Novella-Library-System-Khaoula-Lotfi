@@ -22,6 +22,7 @@ import { DeleteConfirmDialog } from "@/components/parts/delete-confirm-dialog";
 import { BorrowForm } from "./borrow-form";
 import type { ILoan, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   loans: ILoan[];
@@ -29,10 +30,11 @@ interface IProps {
   books: IBook[];
   isAdmin: boolean;
   currentSubscriber?: ISubscriber;
+  dict: IDict["subscribers"];
 }
 
 export function BorrowedWrapper(props: IProps) {
-  const { loans: initialLoans, subscribers, books, isAdmin, currentSubscriber } = props;
+  const { loans: initialLoans, subscribers, books, isAdmin, currentSubscriber, dict } = props;
   const {
     loans,
     open,
@@ -51,27 +53,27 @@ export function BorrowedWrapper(props: IProps) {
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Borrowed Books</h1>
+            <h1 className="text-3xl font-bold text-primary">{dict.borrowedTitle}</h1>
             <p className="text-muted-foreground mt-1">
-              All books currently on loan
+              {dict.borrowedSubtitle}
             </p>
             <div className="flex items-center gap-x-2 mt-3">
               <Badge
                 variant="outline"
                 className="text-primary border-primary/40"
               >
-                {`${loans.length} ${loans.length === 1 ? "Loan" : "Loans"} Active`}
+                {`${loans.length} ${loans.length === 1 ? dict.loanSingular : dict.loanPlural} ${dict.active}`}
               </Badge>
             </div>
           </div>
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-              <Button size="lg">+ Borrow Book</Button>
+              <Button size="lg">{dict.borrowBook}</Button>
             </DialogTrigger>
             <DialogContent className="max-w-sm">
               <DialogHeader>
                 <DialogTitle className="text-primary">
-                  Borrow a Book
+                  {dict.borrowABook}
                 </DialogTitle>
               </DialogHeader>
               <BorrowForm
@@ -83,6 +85,7 @@ export function BorrowedWrapper(props: IProps) {
                 isAdmin={isAdmin}
                 currentSubscriber={currentSubscriber}
                 onBorrow={handleBorrow}
+                dict={dict}
               />
             </DialogContent>
           </Dialog>
@@ -92,12 +95,12 @@ export function BorrowedWrapper(props: IProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Surname</TableHead>
-              <TableHead>Book Title</TableHead>
-              <TableHead>Borrow Date</TableHead>
-              <TableHead>Return Date</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>{dict.colName}</TableHead>
+              <TableHead>{dict.colSurname}</TableHead>
+              <TableHead>{dict.colBookTitle}</TableHead>
+              <TableHead>{dict.colBorrowDate}</TableHead>
+              <TableHead>{dict.colReturnDate}</TableHead>
+              <TableHead>{dict.colActions}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -107,7 +110,7 @@ export function BorrowedWrapper(props: IProps) {
                   colSpan={6}
                   className="text-center text-muted-foreground"
                 >
-                  No borrowed books found.
+                  {dict.noBorrowedBooks}
                 </TableCell>
               </TableRow>
             ) : (
@@ -125,10 +128,11 @@ export function BorrowedWrapper(props: IProps) {
                     <TableCell>{loan.returnDate}</TableCell>
                     <TableCell>
                       <DeleteConfirmDialog
-                        title={`Return "${book?.title ?? loan.bookId}"?`}
-                        description={`This will permanently remove the loan record for "${book?.title ?? loan.bookId}".`}
-                        confirmLabel="Return"
-                        triggerLabel="Return"
+                        title={`${dict.return} "${book?.title ?? loan.bookId}"?`}
+                        description={dict.deleteLoanDescription.replace("{title}", book?.title ?? loan.bookId)}
+                        confirmLabel={dict.return}
+                        triggerLabel={dict.return}
+                        cancelLabel={dict.cancel}
                         onConfirm={() =>
                           loan.id ? handleReturn(loan.id) : Promise.resolve()
                         }

@@ -14,15 +14,17 @@ import { Badge } from "@/components/ui/badge";
 import type { ILoan } from "@/types/subscriber-t";
 import type { ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   loans: ILoan[];
   subscribers: ISubscriber[];
   books: IBook[];
+  dict: IDict["subscribers"];
 }
 
 export function OverdueWrapper(props: IProps) {
-  const { loans, subscribers, books } = props;
+  const { loans, subscribers, books, dict } = props;
   const [search, setSearch] = useState<string>("");
 
   function getSubscriber(subscriberId: string): ISubscriber | undefined {
@@ -52,17 +54,17 @@ export function OverdueWrapper(props: IProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-primary">
-              Overdue Borrowers
+              {dict.overdueTitle}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Subscribers with overdue loans
+              {dict.overdueSubtitle}
             </p>
             <div className="flex items-center gap-x-2 mt-3">
               <Badge
                 variant="outline"
                 className="text-primary border-primary/40"
               >
-                {`${filtered.length} ${filtered.length === 1 ? "Record" : "Records"} Found`}
+                {`${filtered.length} ${filtered.length === 1 ? dict.recordSingular : dict.recordPlural} ${dict.found}`}
               </Badge>
             </div>
           </div>
@@ -70,7 +72,7 @@ export function OverdueWrapper(props: IProps) {
       </div>
       <div className="mb-4">
         <Input
-          placeholder="Search by name, surname, phone or book title..."
+          placeholder={dict.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
@@ -80,12 +82,12 @@ export function OverdueWrapper(props: IProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Surname</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Book Title</TableHead>
-              <TableHead>Borrow Date</TableHead>
-              <TableHead>Return Date</TableHead>
+              <TableHead>{dict.colName}</TableHead>
+              <TableHead>{dict.colSurname}</TableHead>
+              <TableHead>{dict.colPhone}</TableHead>
+              <TableHead>{dict.colBookTitle}</TableHead>
+              <TableHead>{dict.colBorrowDate}</TableHead>
+              <TableHead>{dict.colReturnDate}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -96,8 +98,8 @@ export function OverdueWrapper(props: IProps) {
                   className="text-center text-muted-foreground"
                 >
                   {search.trim()
-                    ? "No results match your search."
-                    : "No overdue loans found."}
+                    ? dict.noResults
+                    : dict.noOverdueLoans}
                 </TableCell>
               </TableRow>
             ) : (

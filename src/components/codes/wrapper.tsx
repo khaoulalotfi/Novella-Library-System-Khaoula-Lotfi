@@ -13,13 +13,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import type { ICode } from "@/types/code-t"
+import type { IDict } from "@/lib/dictionary"
 
 interface IProps {
   codes: ICode[]
+  dict: IDict["codes"]
 }
 
 export function CodesWrapper(props: IProps) {
-  const { codes: initialCodes } = props
+  const { codes: initialCodes, dict } = props
   const {
     codes,
     selected,
@@ -37,28 +39,29 @@ export function CodesWrapper(props: IProps) {
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Codes</h1>
-            <p className="text-muted-foreground mt-1">Manage UDC / ISBN codes</p>
+            <h1 className="text-3xl font-bold text-primary">{dict.title}</h1>
+            <p className="text-muted-foreground mt-1">{dict.subtitle}</p>
             <div className="flex items-center gap-x-2 mt-3">
               <Badge variant="outline" className="text-primary border-primary/40">
-                {`${codes.length} ${codes.length === 1 ? "Code" : "Codes"} Total`}
+                {`${codes.length} ${codes.length === 1 ? dict.codeSingular : dict.codePlural} ${dict.total}`}
               </Badge>
             </div>
           </div>
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-              <Button onClick={handleAdd} size="lg">+ Add Code</Button>
+              <Button onClick={handleAdd} size="lg">{dict.addCode}</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-primary">
-                  {selected ? "Edit Code" : "Add New Code"}
+                  {selected ? dict.editCode : dict.addNewCode}
                 </DialogTitle>
               </DialogHeader>
               <CodeForm
                 key={selected?.id ?? "new"}
                 selected={selected}
                 onSaved={handleSaved}
+                dict={dict}
               />
               {error && (
                 <p className="text-xs text-destructive">{error}</p>
@@ -72,6 +75,7 @@ export function CodesWrapper(props: IProps) {
           codes={codes}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          dict={dict}
         />
       </div>
     </div>

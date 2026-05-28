@@ -18,13 +18,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { ISubscriber } from "@/types/subscriber-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   subscribers: ISubscriber[];
+  dict: IDict["subscribers"];
 }
 
 export function SubscriberSearchWrapper(props: IProps) {
-  const { subscribers } = props;
+  const { subscribers, dict } = props;
   const [results, setResults] = useState<ISubscriber[]>([]);
   const [searched, setSearched] = useState(false);
   const [selected, setSelected] = useState<ISubscriber | undefined>(undefined);
@@ -43,30 +45,31 @@ export function SubscriberSearchWrapper(props: IProps) {
   return (
     <div className="p-6">
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
-        <h1 className="text-3xl font-bold text-primary">Subscriber Search</h1>
+        <h1 className="text-3xl font-bold text-primary">{dict.searchTitle}</h1>
       </div>
       <div className="mb-8">
         <SubscriberSearchForm
           subscribers={subscribers}
           onSearch={handleSearch}
+          dict={dict}
         />
       </div>
       {searched && (
         <div className="rounded-xl border border-border overflow-hidden">
           <div className="p-4 border-b border-border">
             <p className="text-sm text-muted-foreground">
-              {results.length} result(s) found
+              {results.length} {dict.resultsFound}
             </p>
           </div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Surname</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Gender</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{dict.colName}</TableHead>
+                <TableHead>{dict.colSurname}</TableHead>
+                <TableHead>{dict.colPhone}</TableHead>
+                <TableHead>{dict.colEmail}</TableHead>
+                <TableHead>{dict.colGender}</TableHead>
+                <TableHead>{dict.colActions}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -76,7 +79,7 @@ export function SubscriberSearchWrapper(props: IProps) {
                     colSpan={6}
                     className="text-center text-muted-foreground"
                   >
-                    No subscribers found.
+                    {dict.noSubscribersFound}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -86,8 +89,8 @@ export function SubscriberSearchWrapper(props: IProps) {
                     <TableCell>{subscriber.surname}</TableCell>
                     <TableCell>{subscriber.phone}</TableCell>
                     <TableCell>{subscriber.email}</TableCell>
-                    <TableCell className="capitalize">
-                      {subscriber.gender}
+                    <TableCell>
+                      {subscriber.gender === "male" ? dict.male : dict.female}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -95,7 +98,7 @@ export function SubscriberSearchWrapper(props: IProps) {
                         size="sm"
                         onClick={() => handleDetails(subscriber)}
                       >
-                        Details
+                        {dict.details}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -110,37 +113,37 @@ export function SubscriberSearchWrapper(props: IProps) {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-primary">
-              Subscriber Details
+              {dict.subscriberDetails}
             </DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="space-y-4 text-sm">
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Name</span>
+                <span className="text-muted-foreground">{dict.colName}</span>
                 <span className="font-medium">{selected.name}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Surname</span>
+                <span className="text-muted-foreground">{dict.colSurname}</span>
                 <span className="font-medium">{selected.surname}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Phone</span>
+                <span className="text-muted-foreground">{dict.colPhone}</span>
                 <span className="font-medium">{selected.phone}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Email</span>
+                <span className="text-muted-foreground">{dict.colEmail}</span>
                 <span className="font-medium">{selected.email}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">Date of Birth</span>
+                <span className="text-muted-foreground">{dict.colDateOfBirth}</span>
                 <span className="font-medium">{selected.dateOfBirth}</span>
               </div>
               <div className="flex justify-between border-b border-border pb-2">
-                <span className="text-muted-foreground">ID Number</span>
+                <span className="text-muted-foreground">{dict.colIdNumber}</span>
                 <span className="font-medium">{selected.idNumber}</span>
               </div>
               <div className="flex justify-between pb-2">
-                <span className="text-muted-foreground">Gender</span>
+                <span className="text-muted-foreground">{dict.colGender}</span>
                 <span className="font-medium capitalize">
                   {selected.gender}
                 </span>

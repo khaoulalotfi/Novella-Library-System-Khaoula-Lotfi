@@ -4,15 +4,17 @@ import { useLoanData } from "@/hooks/use-loan-data";
 import { BorrowersList } from "./parts/borrowers-list";
 import type { ILoan, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   loans: ILoan[];
   subscribers: ISubscriber[];
   books: IBook[];
+  dict: IDict["loans"];
 }
 
 export function BorrowersWrapper(props: IProps) {
-  const { loans, subscribers, books } = props;
+  const { loans, subscribers, books, dict } = props;
   const { search, setSearch, filtered, getSubscriber, getBook } = useLoanData(
     loans,
     subscribers,
@@ -26,6 +28,7 @@ export function BorrowersWrapper(props: IProps) {
       setSearch={setSearch}
       getSubscriber={getSubscriber}
       getBook={getBook}
+      dict={dict}
     />
   );
 }

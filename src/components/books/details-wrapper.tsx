@@ -18,13 +18,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
+import { Row } from "@/components/books/details-row";
 
 interface IProps {
   books: IBook[];
+  dict: IDict["books"];
 }
 
 export function BookDetailsWrapper(props: IProps) {
-  const { books } = props;
+  const { books, dict } = props;
   const [selected, setSelected] = useState<IBook | undefined>(undefined);
   const [open, setOpen] = useState(false);
 
@@ -36,13 +39,13 @@ export function BookDetailsWrapper(props: IProps) {
   return (
     <div className="p-6">
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
-        <h1 className="text-3xl font-bold text-primary">Book Details</h1>
+        <h1 className="text-3xl font-bold text-primary">{dict.detailsTitle}</h1>
         <p className="text-muted-foreground mt-1">
-          View full details of any book
+          {dict.detailsSubtitle}
         </p>
         <div className="flex items-center gap-x-2 mt-3">
           <Badge variant="outline" className="text-primary border-primary/40">
-            {`${books.length} ${books.length === 1 ? "Book" : "Books"} Total`}
+            {`${books.length} ${books.length === 1 ? dict.bookSingular : dict.bookPlural} ${dict.total}`}
           </Badge>
         </div>
       </div>
@@ -50,11 +53,11 @@ export function BookDetailsWrapper(props: IProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Inv. No</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Author(s)</TableHead>
-              <TableHead>Year</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>{dict.colInvNo}</TableHead>
+              <TableHead>{dict.colTitle}</TableHead>
+              <TableHead>{dict.colAuthors}</TableHead>
+              <TableHead>{dict.colYear}</TableHead>
+              <TableHead>{dict.colActions}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -64,7 +67,7 @@ export function BookDetailsWrapper(props: IProps) {
                   colSpan={5}
                   className="text-center text-muted-foreground"
                 >
-                  No books yet.
+                  {dict.noBooks}
                 </TableCell>
               </TableRow>
             ) : (
@@ -82,7 +85,7 @@ export function BookDetailsWrapper(props: IProps) {
                       size="sm"
                       onClick={() => handleView(book)}
                     >
-                      View
+                      {dict.view}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -95,37 +98,37 @@ export function BookDetailsWrapper(props: IProps) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-primary">Book Details</DialogTitle>
+            <DialogTitle className="text-primary">{dict.detailsTitle}</DialogTitle>
           </DialogHeader>
           {selected && (
             <div className="space-y-4 text-sm">
               <section className="space-y-2">
                 <h3 className="font-semibold text-muted-foreground uppercase text-xs tracking-wider">
-                  Book Information
+                  {dict.bookInfo}
                 </h3>
                 <Row
-                  label="Inventory Number"
+                  label={dict.invNumber}
                   value={String(selected.inventoryNumber)}
                 />
                 <Row
-                  label="Code (UDC/ISBN)"
+                  label={dict.codeUdc}
                   value={selected.codeValue ?? selected.code ?? "—"}
                 />
                 <Row
-                  label="Author(s)"
+                  label={dict.colAuthors}
                   value={
                     (selected.authorNames ?? selected.authors).join(", ") || "—"
                   }
                 />
-                <Row label="Title" value={selected.title} />
-                <Row label="Price" value={String(selected.price)} />
+                <Row label={dict.colTitle} value={selected.title} />
+                <Row label={dict.colPrice} value={String(selected.price)} />
                 <Row
-                  label="Publisher"
+                  label={dict.colPublisher}
                   value={selected.publisherName ?? selected.publisher ?? "—"}
                 />
-                <Row label="Year" value={String(selected.year)} />
+                <Row label={dict.colYear} value={String(selected.year)} />
                 <div className="flex flex-col gap-y-1 border-b border-border pb-2">
-                  <span className="text-muted-foreground">Annotation</span>
+                  <span className="text-muted-foreground">{dict.annotation}</span>
                   <span className="font-medium pl-2 text-sm leading-relaxed">
                     {selected.annotation}
                   </span>
@@ -133,10 +136,10 @@ export function BookDetailsWrapper(props: IProps) {
               </section>
               <section className="space-y-2">
                 <h3 className="font-semibold text-muted-foreground uppercase text-xs tracking-wider">
-                  Subscription History
+                  {dict.subscriptionHistory}
                 </h3>
                 <p className="text-muted-foreground italic text-sm py-2">
-                  No subscription records found for this book.
+                  {dict.noSubscriptionRecords}
                 </p>
               </section>
             </div>
@@ -147,11 +150,3 @@ export function BookDetailsWrapper(props: IProps) {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between border-b border-border pb-2">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-right max-w-[60%]">{value}</span>
-    </div>
-  );
-}

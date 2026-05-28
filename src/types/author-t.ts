@@ -12,3 +12,9 @@ export interface IAuthorForm {
 export const authorSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
 })
+
+export function createAuthorSchema(m: { nameMin: string }) {
+  return z.object({
+    name: z.string().min(2, m.nameMin),
+  })
+}

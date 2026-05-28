@@ -10,23 +10,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   books: IBook[];
+  dict: IDict["books"];
 }
 
 export function BookInventoryWrapper(props: IProps) {
-  const { books } = props;
+  const { books, dict } = props;
   return (
     <div className="p-6">
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
-        <h1 className="text-3xl font-bold text-primary">Library Inventory</h1>
+        <h1 className="text-3xl font-bold text-primary">{dict.inventoryTitle}</h1>
         <p className="text-muted-foreground mt-1">
-          Overview of all books and their status
+          {dict.inventorySubtitle}
         </p>
         <div className="flex items-center gap-x-2 mt-3">
           <Badge variant="outline" className="text-primary border-primary/40">
-            {`${books.length} ${books.length === 1 ? "Book" : "Books"} Total`}
+            {`${books.length} ${books.length === 1 ? dict.bookSingular : dict.bookPlural} ${dict.total}`}
           </Badge>
         </div>
       </div>
@@ -34,14 +36,14 @@ export function BookInventoryWrapper(props: IProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Inv. No</TableHead>
-              <TableHead>Code</TableHead>
-              <TableHead>Author(s)</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Publisher</TableHead>
-              <TableHead>Year</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Annotation</TableHead>
+              <TableHead>{dict.colInvNo}</TableHead>
+              <TableHead>{dict.colCode}</TableHead>
+              <TableHead>{dict.colAuthors}</TableHead>
+              <TableHead>{dict.colTitle}</TableHead>
+              <TableHead>{dict.colPublisher}</TableHead>
+              <TableHead>{dict.colYear}</TableHead>
+              <TableHead>{dict.colPrice}</TableHead>
+              <TableHead>{dict.colAnnotation}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -51,7 +53,7 @@ export function BookInventoryWrapper(props: IProps) {
                   colSpan={8}
                   className="text-center text-muted-foreground"
                 >
-                  No books in inventory.
+                  {dict.noBooksInventory}
                 </TableCell>
               </TableRow>
             ) : (

@@ -16,6 +16,7 @@ interface IProps {
   onConfirm: () => Promise<void>;
   confirmLabel?: string;
   triggerLabel?: string;
+  cancelLabel?: string;
 }
 
 export function DeleteConfirmDialog(props: IProps) {
@@ -25,6 +26,7 @@ export function DeleteConfirmDialog(props: IProps) {
     onConfirm,
     confirmLabel = "Delete",
     triggerLabel = "Delete",
+    cancelLabel = "Cancel",
   } = props;
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -59,7 +61,7 @@ export function DeleteConfirmDialog(props: IProps) {
             onClick={() => setOpen(false)}
             disabled={loading}
           >
-            Cancel
+            {cancelLabel}
           </Button>
           <Button
             variant="destructive"

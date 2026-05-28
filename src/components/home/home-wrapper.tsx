@@ -1,6 +1,12 @@
 import Image from "next/image";
+import type { IDict } from "@/lib/dictionary";
 
-export function HomeWrapper() {
+interface IProps {
+  dict: IDict["home"];
+}
+
+export function HomeWrapper(props: IProps) {
+  const { dict } = props;
   return (
     <div
       className="relative h-[calc(100vh-64px)] overflow-hidden -mx-6 -my-4"
@@ -19,7 +25,7 @@ export function HomeWrapper() {
           className="text-2xl md:text-4xl font-semibold text-white italic"
           style={{ textShadow: "1px 2px 8px rgba(0,0,0,0.9)" }}
         >
-          Stories that stay glowing long after the last page.
+          {dict.tagline}
         </p>
       </div>
     </div>

@@ -10,8 +10,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import type { IDict } from "@/lib/dictionary";
 
-export function Register() {
+interface IProps {
+  lang: string;
+  dict: IDict["auth"];
+}
+
+export function Register(props: IProps) {
+  const { lang, dict } = props;
+
   const [state, formAction] = useActionState<IState, FormData>(
     signUpAction,
     registerDto,
@@ -20,30 +28,30 @@ export function Register() {
   const router = useRouter();
   useEffect(() => {
     if (state.isSaved) {
-      router.push("/profile");
+      router.push(`/${lang}/profile`);
     }
-  }, [state.isSaved, router]);
+  }, [state.isSaved, router, lang]);
 
   return (
     <div className="flex items-center justify-center min-h-[70vh]">
       <Card className="w-full max-w-sm border-border/50 shadow-2xl bg-card/80 backdrop-blur">
         <CardHeader className="space-y-1 pb-4">
           <CardTitle className="text-2xl font-bold text-primary">
-            Sign Up
+            {dict.signUpTitle}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Create an account to get started
+            {dict.signUpDescription}
           </p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" action={formAction} noValidate>
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{dict.email}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={dict.emailPlaceholder}
                 autoComplete="email"
                 required
               />
@@ -55,11 +63,11 @@ export function Register() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">{dict.username}</Label>
               <Input
                 id="username"
                 name="username"
-                placeholder="Enter username"
+                placeholder={dict.usernamePlaceholder}
                 autoComplete="username"
                 required
                 minLength={2}
@@ -72,12 +80,12 @@ export function Register() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{dict.password}</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Min 8 characters"
+                placeholder={dict.passwordMinPlaceholder}
                 autoComplete="new-password"
                 required
                 minLength={8}
@@ -96,12 +104,15 @@ export function Register() {
               </p>
             )}
 
-            <SubmitButton label="Sign Up" />
+            <SubmitButton label={dict.signUp} savingLabel={dict.saving} />
 
             <p className="text-center text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link href="/signin" className="text-primary hover:underline font-medium">
-                Sign In
+              {dict.hasAccount}{" "}
+              <Link
+                href={`/${lang}/signin`}
+                className="text-primary hover:underline font-medium"
+              >
+                {dict.signIn}
               </Link>
             </p>
           </form>

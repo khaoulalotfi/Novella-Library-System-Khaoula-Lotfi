@@ -1,5 +1,6 @@
 import { HistoryWrapper } from "@/components/loans/history-wrapper"
 import { getApi } from "@/utils/server-api"
+import { dict } from "@/dictionaries/en"
 import type { ILoan, ISubscriber } from "@/types/subscriber-t"
 import type { IBook } from "@/types/book-t"
 
@@ -14,5 +15,12 @@ export default async function LoanHistoryPage() {
   const subscribers = subscribersRes ?? []
   const books = booksRes ?? []
 
-  return <HistoryWrapper loans={loans} subscribers={subscribers} books={books} />
+  return (
+    <HistoryWrapper
+      loans={loans}
+      subscribers={subscribers}
+      books={books}
+      dict={dict.loans}
+    />
+  )
 }

@@ -12,3 +12,9 @@ export interface IPublisherForm {
 export const publisherSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
 })
+
+export function createPublisherSchema(m: { nameMin: string }) {
+  return z.object({
+    name: z.string().min(2, m.nameMin),
+  })
+}

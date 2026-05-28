@@ -53,6 +53,28 @@ export const subscriberServerSchema = z.object({
   gender: z.enum(["male", "female"], { message: "Gender is required" }),
 })
 
+export interface ISubscriberSchemaMessages {
+  nameRequired: string
+  surnameRequired: string
+  phoneRequired: string
+  emailInvalid: string
+  dateOfBirthRequired: string
+  idNumberRequired: string
+  genderRequired: string
+}
+
+export function createSubscriberSchema(m: ISubscriberSchemaMessages) {
+  return z.object({
+    name: z.string().min(1, m.nameRequired),
+    surname: z.string().min(1, m.surnameRequired),
+    phone: z.string().min(1, m.phoneRequired),
+    email: z.string().email(m.emailInvalid),
+    dateOfBirth: z.string().min(1, m.dateOfBirthRequired),
+    idNumber: z.string().min(1, m.idNumberRequired),
+    gender: z.enum(["male", "female"], { message: m.genderRequired }),
+  })
+}
+
 export const loanServerSchema = z.object({
   subscriberId: z.string().min(1, "Subscriber is required"),
   bookId: z.string().min(1, "Book is required"),

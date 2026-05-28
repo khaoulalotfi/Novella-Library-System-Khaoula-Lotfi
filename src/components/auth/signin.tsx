@@ -9,8 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import type { IDict } from "@/lib/dictionary";
 
-export function SignIn() {
+interface IProps {
+  lang: string;
+  dict: IDict["auth"];
+}
+
+export function SignIn(props: IProps) {
+  const { lang, dict } = props;
+
   const [state, formAction] = useActionState<IState, FormData>(
     signInAction,
     registerDto,
@@ -21,21 +29,21 @@ export function SignIn() {
       <Card className="w-full max-w-sm border-border/50 shadow-2xl bg-card/80 backdrop-blur">
         <CardHeader className="space-y-1 pb-4">
           <CardTitle className="text-2xl font-bold text-primary">
-            Sign In
+            {dict.signInTitle}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Enter your credentials to access your account
+            {dict.signInDescription}
           </p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" action={formAction} noValidate>
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{dict.email}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={dict.emailPlaceholder}
                 autoComplete="email"
                 required
               />
@@ -47,12 +55,12 @@ export function SignIn() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{dict.password}</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Enter password"
+                placeholder={dict.passwordPlaceholder}
                 autoComplete="current-password"
                 required
                 minLength={8}
@@ -76,12 +84,15 @@ export function SignIn() {
               </p>
             )}
 
-            <SubmitButton label="Sign In" />
+            <SubmitButton label={dict.signIn} savingLabel={dict.saving} />
 
             <p className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-primary hover:underline font-medium">
-                Sign Up
+              {dict.noAccount}{" "}
+              <Link
+                href={`/${lang}/signup`}
+                className="text-primary hover:underline font-medium"
+              >
+                {dict.signUp}
               </Link>
             </p>
           </form>

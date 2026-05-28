@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/select";
 import { FormInput } from "@/components/parts/form-input";
 import { AuthorSelect } from "./author-select";
-import { bookSchema } from "./book-schema"
+import { createBookSchema } from "./book-schema"
 import type { IBookForm } from "@/types/book-t"
 import type { IBook } from "@/types/book-t";
 import type { IAuthor } from "@/types/author-t";
 import type { IPublisher } from "@/types/publisher-t";
 import type { ICode } from "@/types/code-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   selected: IBook | undefined;
@@ -27,17 +28,33 @@ interface IProps {
   publishers: IPublisher[];
   codes: ICode[];
   onSaved: (book: IBook) => void;
+  dict: IDict["books"];
 }
 
 export function BookForm(props: IProps) {
-  const { selected, authors, publishers, codes, onSaved } = props;
+  const { selected, authors, publishers, codes, onSaved, dict } = props;
+
+  const schema = createBookSchema({
+    inventoryRequired: dict.errInventoryRequired,
+    inventoryMustBePositive: dict.errInventoryMustBePositive,
+    authorRequired: dict.errAuthorRequired,
+    titleRequired: dict.errTitleRequired,
+    priceRequired: dict.errPriceRequired,
+    pricePositive: dict.errPricePositive,
+    publisherRequired: dict.errPublisherRequired,
+    yearRequired: dict.errYearRequired,
+    yearRange: dict.errYearRange,
+    annotationRequired: dict.errAnnotationRequired,
+    annotationMax: dict.errAnnotationMax,
+  })
+
   const {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<IBookForm>({
-    resolver: zodResolver(bookSchema),
+    resolver: zodResolver(schema),
     mode: "onTouched",
     defaultValues: {
       inventoryNumber:
@@ -82,21 +99,21 @@ export function BookForm(props: IProps) {
       autoComplete="off"
     >
       <FormInput
-        label="Inventory Number"
-        placeholder="Enter inventory number"
+        label={dict.formInventoryNumber}
+        placeholder={dict.formInventoryPlaceholder}
         error={String(errors.inventoryNumber?.message ?? "")}
         {...register("inventoryNumber")}
       />
 
       <div className="space-y-1">
-        <Label>Code (UDC or ISBN) — optional</Label>
+        <Label>{dict.formCodeOptional}</Label>
         <Controller
           control={control}
           name="code"
           render={({ field }) => (
             <Select onValueChange={field.onChange} value={field.value ?? ""}>
               <SelectTrigger>
-                <SelectValue placeholder="Select code (optional)" />
+                <SelectValue placeholder={dict.formSelectCode} />
               </SelectTrigger>
               <SelectContent>
                 {codeOptions.map((opt) => (
@@ -114,31 +131,33 @@ export function BookForm(props: IProps) {
         control={control}
         authorOptions={authorOptions}
         error={String(errors.authors?.message ?? "")}
+        label={dict.formAuthors}
+        placeholder={dict.formSelectAuthors}
       />
 
       <FormInput
-        label="Title"
-        placeholder="Enter title"
+        label={dict.colTitle}
+        placeholder={dict.formEnterTitle}
         error={String(errors.title?.message ?? "")}
         {...register("title")}
       />
 
       <FormInput
-        label="Price"
-        placeholder="Enter price"
+        label={dict.colPrice}
+        placeholder={dict.formEnterPrice}
         error={String(errors.price?.message ?? "")}
         {...register("price")}
       />
 
       <div className="space-y-1">
-        <Label>Publisher</Label>
+        <Label>{dict.colPublisher}</Label>
         <Controller
           control={control}
           name="publisher"
           render={({ field }) => (
             <Select onValueChange={field.onChange} value={field.value ?? ""}>
               <SelectTrigger>
-                <SelectValue placeholder="Select publisher" />
+                <SelectValue placeholder={dict.formSelectPublisher} />
               </SelectTrigger>
               <SelectContent>
                 {publisherOptions.map((opt) => (
@@ -158,8 +177,8 @@ export function BookForm(props: IProps) {
       </div>
 
       <FormInput
-        label="Year"
-        placeholder="Enter year"
+        label={dict.colYear}
+        placeholder={dict.formEnterYear}
         error={String(errors.year?.message ?? "")}
         {...register("year")}
       />
@@ -171,14 +190,14 @@ export function BookForm(props: IProps) {
           render={({ field }) => (
             <>
               <div className="flex justify-between items-center">
-                <Label>Annotation</Label>
+                <Label>{dict.formAnnotation}</Label>
                 <span className="text-xs text-muted-foreground">
                   {field.value.length}/500
                 </span>
               </div>
               <Textarea
                 {...field}
-                placeholder="Enter annotation"
+                placeholder={dict.formEnterAnnotation}
                 maxLength={500}
               />
             </>
@@ -191,8 +210,8 @@ export function BookForm(props: IProps) {
         )}
       </div>
 
-      <Button type="submit" className="w-full">
-        {selected ? "Update Book" : "Save Book"}
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? dict.saving : selected ? dict.updateBook : dict.saveBook}
       </Button>
     </form>
   );

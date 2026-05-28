@@ -16,6 +16,7 @@ import type { IBook } from "@/types/book-t";
 import type { IAuthor } from "@/types/author-t";
 import type { IPublisher } from "@/types/publisher-t";
 import type { ICode } from "@/types/code-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   books: IBook[];
@@ -23,10 +24,11 @@ interface IProps {
   publishers: IPublisher[];
   codes: ICode[];
   isAdmin: boolean;
+  dict: IDict["books"];
 }
 
 export function BookWrapper(props: IProps) {
-  const { books: initialBooks, authors, publishers, codes, isAdmin } = props;
+  const { books: initialBooks, authors, publishers, codes, isAdmin, dict } = props;
   const {
     books,
     selected,
@@ -44,16 +46,16 @@ export function BookWrapper(props: IProps) {
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Book List</h1>
+            <h1 className="text-3xl font-bold text-primary">{dict.title}</h1>
             <p className="text-muted-foreground mt-1">
-              Manage your library collection
+              {dict.subtitle}
             </p>
             <div className="flex items-center gap-x-2 mt-3">
               <Badge
                 variant="outline"
                 className="text-primary border-primary/40"
               >
-                {`${books.length} ${books.length === 1 ? "Book" : "Books"} Total`}
+                {`${books.length} ${books.length === 1 ? dict.bookSingular : dict.bookPlural} ${dict.total}`}
               </Badge>
             </div>
           </div>
@@ -61,13 +63,13 @@ export function BookWrapper(props: IProps) {
             <Dialog open={open} onOpenChange={handleOpenChange}>
               <DialogTrigger asChild>
                 <Button onClick={handleAdd} size="lg">
-                  + Add Book
+                  {dict.addBook}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="text-primary">
-                    {selected ? "Edit Book" : "Add New Book"}
+                    {selected ? dict.editBook : dict.addNewBook}
                   </DialogTitle>
                 </DialogHeader>
                 <BookForm
@@ -77,6 +79,7 @@ export function BookWrapper(props: IProps) {
                   publishers={publishers}
                   codes={codes}
                   onSaved={handleSaved}
+                  dict={dict}
                 />
                 {error && (
                   <p className="text-destructive text-xs font-medium">
@@ -94,6 +97,7 @@ export function BookWrapper(props: IProps) {
           onEdit={handleEdit}
           onDelete={handleDelete}
           isAdmin={isAdmin}
+          dict={dict}
         />
       </div>
     </div>

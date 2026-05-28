@@ -7,17 +7,7 @@ import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/parts/text-field";
 import { SubmitButton } from "@/components/parts/submit-button";
 import type { ISubscriber } from "@/types/subscriber-t";
-
-const searchSchema = z
-  .object({
-    name: z.string().optional(),
-    surname: z.string().optional(),
-    phone: z.string().optional(),
-  })
-  .refine((data) => data.name || data.surname || data.phone, {
-    message: "Please enter at least one search term",
-    path: ["name"],
-  });
+import type { IDict } from "@/lib/dictionary";
 
 interface ISearchFormValues {
   name?: string;
@@ -28,10 +18,23 @@ interface ISearchFormValues {
 interface IProps {
   subscribers: ISubscriber[];
   onSearch: (results: ISubscriber[]) => void;
+  dict: IDict["subscribers"];
 }
 
 export function SubscriberSearchForm(props: IProps) {
-  const { subscribers, onSearch } = props;
+  const { subscribers, onSearch, dict } = props;
+
+  const searchSchema = z
+    .object({
+      name: z.string().optional(),
+      surname: z.string().optional(),
+      phone: z.string().optional(),
+    })
+    .refine((data) => data.name || data.surname || data.phone, {
+      message: dict.errSearchRequired,
+      path: ["name"],
+    });
+
   const form = useForm<ISearchFormValues>({
     resolver: zodResolver(searchSchema),
     mode: "onTouched",
@@ -69,23 +72,23 @@ export function SubscriberSearchForm(props: IProps) {
           <TextField
             control={form.control}
             name="name"
-            label="Name"
-            placeholder="Search by name"
+            label={dict.colName}
+            placeholder={dict.searchByName}
           />
           <TextField
             control={form.control}
             name="surname"
-            label="Surname"
-            placeholder="Search by surname"
+            label={dict.colSurname}
+            placeholder={dict.searchBySurname}
           />
           <TextField
             control={form.control}
             name="phone"
-            label="Phone"
-            placeholder="Search by phone"
+            label={dict.colPhone}
+            placeholder={dict.searchByPhone}
           />
         </div>
-        <SubmitButton label="Search" />
+        <SubmitButton label={dict.search} />
       </form>
     </Form>
   );

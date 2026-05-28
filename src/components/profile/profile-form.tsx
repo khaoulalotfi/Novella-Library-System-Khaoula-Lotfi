@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { IState } from "@/types/shared-t";
+import type { IDict } from "@/lib/dictionary";
 
 const initialState: IState = {
   isSaved: false,
@@ -21,7 +22,13 @@ const initialState: IState = {
   errors: undefined,
 };
 
-export function ProfileForm() {
+interface IProps {
+  dict: IDict["profile"];
+}
+
+export function ProfileForm(props: IProps) {
+  const { dict } = props;
+
   const [state, formAction] = useActionState<IState, FormData>(
     profileAction,
     initialState,
@@ -32,14 +39,14 @@ export function ProfileForm() {
     <div className="flex items-center justify-center min-h-[60vh]">
       <form className="space-y-4 w-full sm:w-96" action={formAction} noValidate>
         <h1 className="text-2xl font-bold text-primary">
-          Complete Your Profile
+          {dict.heading}
         </h1>
         <p className="text-muted-foreground text-sm">
-          Please fill in your details to complete your library membership.
+          {dict.description}
         </p>
         <div className="space-y-1">
-          <Label>Name</Label>
-          <Input name="name" placeholder="Enter your name" />
+          <Label>{dict.name}</Label>
+          <Input name="name" placeholder={dict.namePlaceholder} />
           {state.errors?.name && (
             <p className="text-xs text-destructive">
               {state.errors.name.join(" | ")}
@@ -47,8 +54,8 @@ export function ProfileForm() {
           )}
         </div>
         <div className="space-y-1">
-          <Label>Surname</Label>
-          <Input name="surname" placeholder="Enter your surname" />
+          <Label>{dict.surname}</Label>
+          <Input name="surname" placeholder={dict.surnamePlaceholder} />
           {state.errors?.surname && (
             <p className="text-xs text-destructive">
               {state.errors.surname.join(" | ")}
@@ -56,8 +63,8 @@ export function ProfileForm() {
           )}
         </div>
         <div className="space-y-1">
-          <Label>Phone</Label>
-          <Input name="phone" placeholder="Enter your phone number" />
+          <Label>{dict.phone}</Label>
+          <Input name="phone" placeholder={dict.phonePlaceholder} />
           {state.errors?.phone && (
             <p className="text-xs text-destructive">
               {state.errors.phone.join(" | ")}
@@ -65,7 +72,7 @@ export function ProfileForm() {
           )}
         </div>
         <div className="space-y-1">
-          <Label>Date of Birth</Label>
+          <Label>{dict.dateOfBirth}</Label>
           <Input name="dateOfBirth" type="date" />
           {state.errors?.dateOfBirth && (
             <p className="text-xs text-destructive">
@@ -74,8 +81,8 @@ export function ProfileForm() {
           )}
         </div>
         <div className="space-y-1">
-          <Label>ID Number</Label>
-          <Input name="idNumber" placeholder="Enter your ID number" />
+          <Label>{dict.idNumber}</Label>
+          <Input name="idNumber" placeholder={dict.idNumberPlaceholder} />
           {state.errors?.idNumber && (
             <p className="text-xs text-destructive">
               {state.errors.idNumber.join(" | ")}
@@ -83,14 +90,14 @@ export function ProfileForm() {
           )}
         </div>
         <div className="space-y-1">
-          <Label>Gender</Label>
+          <Label>{dict.gender}</Label>
           <Select value={gender} onValueChange={setGender}>
             <SelectTrigger>
-              <SelectValue placeholder="Select gender" />
+              <SelectValue placeholder={dict.genderPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="male">Male</SelectItem>
-              <SelectItem value="female">Female</SelectItem>
+              <SelectItem value="male">{dict.male}</SelectItem>
+              <SelectItem value="female">{dict.female}</SelectItem>
             </SelectContent>
           </Select>
           <input type="hidden" name="gender" value={gender} />
@@ -100,7 +107,7 @@ export function ProfileForm() {
             </p>
           )}
         </div>
-        <SubmitButton label="Complete Registration" />
+        <SubmitButton label={dict.completeRegistration} savingLabel={dict.saving} />
         {state.errors?.general && (
           <div className="p-1 bg-red-100 italic text-sm">
             {state.errors.general.join(" | ")}

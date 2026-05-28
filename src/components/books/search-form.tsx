@@ -7,17 +7,7 @@ import { Form } from "@/components/ui/form";
 import { TextField } from "@/components/parts/text-field";
 import { SubmitButton } from "@/components/parts/submit-button";
 import type { IBook } from "@/types/book-t";
-
-const searchSchema = z
-  .object({
-    title: z.string().optional(),
-    author: z.string().optional(),
-    year: z.string().optional(),
-  })
-  .refine((data) => data.title || data.author || data.year, {
-    message: "Please enter at least one search term",
-    path: ["title"],
-  });
+import type { IDict } from "@/lib/dictionary";
 
 interface ISearchFormValues {
   title?: string;
@@ -28,10 +18,23 @@ interface ISearchFormValues {
 interface IProps {
   books: IBook[];
   onSearch: (results: IBook[]) => void;
+  dict: IDict["books"];
 }
 
 export function BookSearchForm(props: IProps) {
-  const { books, onSearch } = props;
+  const { books, onSearch, dict } = props;
+
+  const searchSchema = z
+    .object({
+      title: z.string().optional(),
+      author: z.string().optional(),
+      year: z.string().optional(),
+    })
+    .refine((data) => data.title || data.author || data.year, {
+      message: dict.errSearchRequired,
+      path: ["title"],
+    });
+
   const form = useForm<ISearchFormValues>({
     resolver: zodResolver(searchSchema),
     mode: "onTouched",
@@ -70,23 +73,23 @@ export function BookSearchForm(props: IProps) {
           <TextField
             control={form.control}
             name="title"
-            label="Title"
-            placeholder="Search by title"
+            label={dict.colTitle}
+            placeholder={dict.searchByTitle}
           />
           <TextField
             control={form.control}
             name="author"
-            label="Author"
-            placeholder="Search by author"
+            label={dict.colAuthor}
+            placeholder={dict.searchByAuthor}
           />
           <TextField
             control={form.control}
             name="year"
-            label="Year"
-            placeholder="Search by year"
+            label={dict.colYear}
+            placeholder={dict.searchByYear}
           />
         </div>
-        <SubmitButton label="Search" />
+        <SubmitButton label={dict.search} />
       </form>
     </Form>
   );

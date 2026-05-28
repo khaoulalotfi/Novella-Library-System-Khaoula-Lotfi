@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import type { ILoanForm, ILoanFormErrors, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   form: ILoanForm;
@@ -22,21 +23,22 @@ interface IProps {
   isAdmin: boolean;
   currentSubscriber?: ISubscriber;
   onBorrow: () => void;
+  dict: IDict["subscribers"];
 }
 
 export function BorrowForm(props: IProps) {
-  const { form, formErrors, setForm, subscribers, books, isAdmin, currentSubscriber, onBorrow } = props;
+  const { form, formErrors, setForm, subscribers, books, isAdmin, currentSubscriber, onBorrow, dict } = props;
   return (
     <div className="space-y-2">
       <div className="space-y-1">
-        <Label>Subscriber</Label>
+        <Label>{dict.subscriberLabel}</Label>
         {isAdmin ? (
           <Select
             value={form.subscriberId}
             onValueChange={(v) => setForm({ ...form, subscriberId: v })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select subscriber" />
+              <SelectValue placeholder={dict.selectSubscriber} />
             </SelectTrigger>
             <SelectContent>
               {subscribers.map((s) => (
@@ -59,13 +61,13 @@ export function BorrowForm(props: IProps) {
         )}
       </div>
       <div className="space-y-1">
-        <Label>Book</Label>
+        <Label>{dict.bookLabel}</Label>
         <Select
           value={form.bookId}
           onValueChange={(v) => setForm({ ...form, bookId: v })}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select book" />
+            <SelectValue placeholder={dict.selectBook} />
           </SelectTrigger>
           <SelectContent>
             {books.map((b) => (
@@ -82,7 +84,7 @@ export function BorrowForm(props: IProps) {
         )}
       </div>
       <div className="space-y-1">
-        <Label>Borrow Date</Label>
+        <Label>{dict.borrowDate}</Label>
         <Input
           type="date"
           value={form.borrowDate}
@@ -95,7 +97,7 @@ export function BorrowForm(props: IProps) {
         )}
       </div>
       <div className="space-y-1">
-        <Label>Return Date</Label>
+        <Label>{dict.returnDate}</Label>
         <Input
           type="date"
           value={form.returnDate}
@@ -108,7 +110,7 @@ export function BorrowForm(props: IProps) {
         )}
       </div>
       <Button className="w-full" onClick={onBorrow}>
-        Confirm Borrow
+        {dict.confirmBorrow}
       </Button>
     </div>
   );

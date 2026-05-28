@@ -18,13 +18,15 @@ interface IProps {
   control: Control<IBookForm>
   authorOptions: IOption[]
   error?: string
+  label: string
+  placeholder: string
 }
 
 export function AuthorSelect(props: IProps) {
-  const { control, authorOptions, error } = props;
+  const { control, authorOptions, error, label, placeholder } = props;
   return (
     <div className="space-y-1">
-      <Label>Author(s)</Label>
+      <Label>{label}</Label>
       <Controller
         control={control}
         name="authors"
@@ -40,7 +42,7 @@ export function AuthorSelect(props: IProps) {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select author(s)" />
+                  <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
                 <SelectContent>
                   {authorOptions

@@ -11,29 +11,31 @@ import {
 import { Button } from "@/components/ui/button"
 import { DeleteConfirmDialog } from "@/components/parts/delete-confirm-dialog"
 import type { ICode } from "@/types/code-t"
+import type { IDict } from "@/lib/dictionary"
 
 interface IProps {
   codes: ICode[]
   onEdit: (code: ICode) => void
   onDelete: (id: string) => Promise<void>
+  dict: IDict["codes"]
 }
 
 export function CodeList(props: IProps) {
-  const { codes, onEdit, onDelete } = props
+  const { codes, onEdit, onDelete, dict } = props
 
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Value</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
+          <TableHead>{dict.colValue}</TableHead>
+          <TableHead className="text-right">{dict.colActions}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {codes.length === 0 ? (
           <TableRow>
             <TableCell colSpan={2} className="text-center text-muted-foreground py-8">
-              No codes found.
+              {dict.noCodesFound}
             </TableCell>
           </TableRow>
         ) : (
@@ -43,11 +45,14 @@ export function CodeList(props: IProps) {
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
                   <Button size="sm" variant="outline" onClick={() => onEdit(code)}>
-                    Edit
+                    {dict.edit}
                   </Button>
                   <DeleteConfirmDialog
-                    title={`Delete "${code.value}"?`}
-                    description="This will permanently remove this code."
+                    title={`${dict.delete} "${code.value}"?`}
+                    description={dict.deleteDescription}
+                    triggerLabel={dict.delete}
+                    confirmLabel={dict.delete}
+                    cancelLabel={dict.cancel}
                     onConfirm={() => onDelete(code.id ?? "")}
                   />
                 </div>

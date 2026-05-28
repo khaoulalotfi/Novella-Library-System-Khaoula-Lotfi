@@ -12,3 +12,9 @@ export interface ICodeForm {
 export const codeSchema = z.object({
   value: z.string().min(1, "Code value is required"),
 })
+
+export function createCodeSchema(m: { valueRequired: string }) {
+  return z.object({
+    value: z.string().min(1, m.valueRequired),
+  })
+}

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import type { ILoan, ISubscriber } from "@/types/subscriber-t";
 import type { IBook } from "@/types/book-t";
+import type { IDict } from "@/lib/dictionary";
 
 interface IProps {
   filtered: ILoan[];
@@ -19,25 +20,26 @@ interface IProps {
   setSearch: (v: string) => void;
   getSubscriber: (id: string) => ISubscriber | undefined;
   getBook: (id: string) => IBook | undefined;
+  dict: IDict["loans"];
 }
 
 export function HistoryList(props: IProps) {
-  const { filtered, search, setSearch, getSubscriber, getBook } = props;
+  const { filtered, search, setSearch, getSubscriber, getBook, dict } = props;
 
   return (
     <div>
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
-        <h1 className="text-3xl font-bold text-primary">Loan History</h1>
-        <p className="text-muted-foreground mt-1">All loans ever recorded</p>
+        <h1 className="text-3xl font-bold text-primary">{dict.historyTitle}</h1>
+        <p className="text-muted-foreground mt-1">{dict.historySubtitle}</p>
         <div className="flex items-center gap-x-2 mt-3">
           <Badge variant="outline" className="text-primary border-primary/40">
-            {`${filtered.length} ${filtered.length === 1 ? "Record" : "Records"} Found`}
+            {`${filtered.length} ${filtered.length === 1 ? dict.recordSingular : dict.recordPlural} ${dict.found}`}
           </Badge>
         </div>
       </div>
       <div className="mb-4">
         <Input
-          placeholder="Search by name, surname, phone or book title..."
+          placeholder={dict.searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
@@ -47,12 +49,12 @@ export function HistoryList(props: IProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Surname</TableHead>
-              <TableHead>Book Title</TableHead>
-              <TableHead>Borrow Date</TableHead>
-              <TableHead>Return Date</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>{dict.colName}</TableHead>
+              <TableHead>{dict.colSurname}</TableHead>
+              <TableHead>{dict.colBookTitle}</TableHead>
+              <TableHead>{dict.colBorrowDate}</TableHead>
+              <TableHead>{dict.colReturnDate}</TableHead>
+              <TableHead>{dict.colStatus}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -63,8 +65,8 @@ export function HistoryList(props: IProps) {
                   className="text-center text-muted-foreground"
                 >
                   {search.trim()
-                    ? "No results match your search."
-                    : "No loans found."}
+                    ? dict.noResults
+                    : dict.noLoans}
                 </TableCell>
               </TableRow>
             ) : (
@@ -84,7 +86,7 @@ export function HistoryList(props: IProps) {
                     <TableCell>{loan.returnDate}</TableCell>
                     <TableCell>
                       <Badge variant={isOverdue ? "destructive" : "outline"}>
-                        {isOverdue ? "Overdue" : "Active"}
+                        {isOverdue ? dict.statusOverdue : dict.statusActive}
                       </Badge>
                     </TableCell>
                   </TableRow>

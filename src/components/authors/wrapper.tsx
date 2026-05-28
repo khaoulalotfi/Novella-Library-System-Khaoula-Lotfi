@@ -13,13 +13,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import type { IAuthor } from "@/types/author-t"
+import type { IDict } from "@/lib/dictionary"
 
 interface IProps {
   authors: IAuthor[]
+  dict: IDict["authors"]
 }
 
 export function AuthorsWrapper(props: IProps) {
-  const { authors: initialAuthors } = props
+  const { authors: initialAuthors, dict } = props
   const {
     authors,
     selected,
@@ -37,28 +39,29 @@ export function AuthorsWrapper(props: IProps) {
       <div className="rounded-xl bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 p-6 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-primary">Authors</h1>
-            <p className="text-muted-foreground mt-1">Manage authors</p>
+            <h1 className="text-3xl font-bold text-primary">{dict.title}</h1>
+            <p className="text-muted-foreground mt-1">{dict.subtitle}</p>
             <div className="flex items-center gap-x-2 mt-3">
               <Badge variant="outline" className="text-primary border-primary/40">
-                {`${authors.length} ${authors.length === 1 ? "Author" : "Authors"} Total`}
+                {`${authors.length} ${authors.length === 1 ? dict.authorSingular : dict.authorPlural} ${dict.total}`}
               </Badge>
             </div>
           </div>
           <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-              <Button onClick={handleAdd} size="lg">+ Add Author</Button>
+              <Button onClick={handleAdd} size="lg">{dict.addAuthor}</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-primary">
-                  {selected ? "Edit Author" : "Add New Author"}
+                  {selected ? dict.editAuthor : dict.addNewAuthor}
                 </DialogTitle>
               </DialogHeader>
               <AuthorForm
                 key={selected?.id ?? "new"}
                 selected={selected}
                 onSaved={handleSaved}
+                dict={dict}
               />
               {error && (
                 <p className="text-xs text-destructive">{error}</p>
@@ -72,6 +75,7 @@ export function AuthorsWrapper(props: IProps) {
           authors={authors}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          dict={dict}
         />
       </div>
     </div>
